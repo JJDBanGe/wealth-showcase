@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.3 — 2026-10-29
+
+- Clarified synthetic cash, initial assets, return paths and fixed exchange-rate labels.
+- Labeled index scenarios as configurable return assumptions rather than historical averages.
+- Simplified AI assistance and development-history explanations; corrected commit provenance wording.
+- Added a regression check against live-data and historical-return claims and refreshed screenshots.
+
 ## 0.1.2 — 2026-10-29
 
 - Prepared public repository overview, review guidance and publication notes.

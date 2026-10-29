@@ -1,6 +1,5 @@
 """公开演示参数；所有金额均为虚构示例，不读取本机配置。"""
 from collections import OrderedDict
-OPTION_WORKSPACE_LAUNCH_URL = 'wealth-options://open'
 CATS = ['饮食', '交通', '通讯', '水电煤网', '购物', '娱乐休闲', '旅行住宿', '教育', '其他']
 NONESSENTIAL_CATS = ('购物', '娱乐休闲', '旅行住宿', '教育', '其他')
 PIE_COLORS = OrderedDict([('饮食', '#4A90D9'), ('交通', '#7A9A3F'), ('通讯', '#8BC8EA'), ('水电煤网', '#94D8C3'), ('购物', '#C9A227'), ('娱乐休闲', '#E1B98F'), ('旅行住宿', '#9EACEA'), ('教育', '#8B9BB4'), ('其他', '#B0B7C3')])
@@ -8,7 +7,7 @@ SWR = 0.035
 TWR_ANNUAL = 0.09
 DEFAULT_RATE = 'twr'
 RATES = {'twr': TWR_ANNUAL, 'nasdaq': 0.14, 'sp500': 0.1}
-RATE_LABELS = {'twr': f'IBKR TWR · 你的实际年化 {TWR_ANNUAL * 100:.1f}%（含现金拖累，占位值待接入）', 'nasdaq': '纳斯达克 100 · 历史平均年化 14%', 'sp500': '标普 500 · 历史平均年化 10%'}
+RATE_LABELS = {"twr": f"演示 TWR · 假设年化 {TWR_ANNUAL*100:.1f}%", "nasdaq": f"纳指情景 · 假设年化 {RATES['nasdaq']*100:.0f}%", "sp500": f"标普情景 · 假设年化 {RATES['sp500']*100:.0f}%"}
 INVEST_LEVELS = [('500 USD/月', 500.0), ('1,000 USD/月', 1000.0), ('1,500 USD/月（固定）', 1500.0)]
 FIXED_INVEST_USD = 1500.0
 STOCK_INDUSTRIES = {'AMAT': '半导体设备', 'ASML': '半导体设备', 'LRCX': '半导体设备', 'AMD': '半导体芯片', 'NVDA': '半导体芯片', 'TSM': '半导体芯片', 'AVGO': '半导体/基础设施软件', 'AMZN': '电商与云计算', 'GOOGL': '互联网与广告', 'META': '互联网与广告', 'MSFT': '软件与云计算', 'IBKR': '金融科技', 'BRK B': '综合金融', 'TSLA': '电动车与能源', 'CELH': '消费品', 'SOFI': '数字金融', 'PLTR': '企业软件与数据', 'QQQ': '科技股ETF', 'DXYZ': '科技股封闭式基金', 'MU': '半导体芯片', 'SNDK': '半导体芯片', 'INTC': '半导体芯片', 'HIMS': '数字医疗', 'GLDM': '黄金ETF', 'V': '支付网络', 'MELI': '电商与金融科技', 'GRAB': '互联网平台', 'AAPL': '消费科技', 'SE': '互联网平台', 'MC': '奢侈品消费', 'SPCX': '特殊目的收购公司', 'ACHR': '电动航空', 'SPYM': '大盘ETF'}
@@ -31,7 +30,7 @@ TWR_MIN_FUNDED_USD = 1000.0
 EMERGENCY_MONTHS = 6.0
 MIND_SPEND = {'months': 3, 'free_pct': 0.75, 'free_floor': 50.0, 'free_cap': 200.0, 'cooling_pct': 0.15, 'cooling_floor': 300.0, 'cooling_cap': 1500.0}
 HEALTH_BASE = {'必要': 50, '想要': 30, '储蓄': 20}
-RESERVOIR_TIERS = [(2000, 'AirPods Pro', '🎧', '港版 HK$1,899'), (5000, 'iPad Air', '📱', '港版 HK$4,799'), (10000, 'iPhone 18 Pro', '📱', '港版 HK$9,999'), (15000, 'MacBook Air / 东南亚游', '💻', 'HK$7,999 起 / 约 8千'), (25000, '日韩短途旅游', '✈️', '约 HK$15,000~25,000'), (40000, '欧美长途旅游', '🌍', '约 HK$30,000~50,000'), (60000, '高端消费 / 任意大额', '🎁', '无上限')]
+RESERVOIR_TIERS = [(2000, 'AirPods Pro', '🎧', '示例 HK$1,899'), (5000, 'iPad Air', '📱', '示例 HK$4,799'), (10000, 'iPhone 18 Pro', '📱', '示例 HK$9,999'), (15000, 'MacBook Air / 东南亚游', '💻', 'HK$7,999 起 / 约 8千'), (25000, '日韩短途旅游', '✈️', '约 HK$15,000~25,000'), (40000, '欧美长途旅游', '🌍', '约 HK$30,000~50,000'), (60000, '高端消费 / 任意大额', '🎁', '无上限')]
 FREEDOM_LADDER = [('奶茶自由', '🧋', 500), ('iPhone自由', '📱', 9999 / 12), ('享受型食物自由', '🍣', 2500), ('娱乐自由', '🎮', 5000), ('交通自由', '🚕', 6000), ('旅行自由', '✈️', 15000), ('房租自由', '🏠', 22000), ('FIRE', '💰', 26000)]
 USD_HKD_FALLBACK = 7.8
 USD_CNY_FALLBACK = 7.2

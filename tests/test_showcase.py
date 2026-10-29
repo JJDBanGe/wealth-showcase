@@ -64,7 +64,7 @@ def test_generation_ignores_private_environment_and_never_connects(tmp_path, mon
     assert path.stat().st_size > 40000
     assert (tmp_path / 'workspace.html').exists()
     timeline = (tmp_path / 'timeline.html').read_text(encoding='utf-8')
-    assert '133' in timeline and '不代表' in timeline
+    assert '133' in timeline and '独立 Git 历史' in timeline
     cfg = json.loads(re.search(r'var CFG = (.*);', html).group(1))
     assert cfg['PERFORMANCE_PERIODS']['ALL']['days'] > 100
     assert 'data-return-chart="ALL"' in html
@@ -111,3 +111,15 @@ def test_workspace_cashflow_and_candidate_consistency():
     long, short = candidate['legs']
     credit = (short['quote']['bid']-long['quote']['ask'])*100*2
     assert credit == pytest.approx(candidate['assessment']['metrics']['credit'])
+
+
+def test_demo_copy_does_not_claim_live_sources_or_historical_market_returns(tmp_path):
+    """合成输入不能被页面标签或手填情景描述为真实账户或历史行情。"""
+    generate(tmp_path)
+    html = (tmp_path/'index.html').read_text(encoding='utf-8')
+    for text in ['已接入 IBKR Flex 自动获取', '你的实际年化', 'P0 真实',
+                 'IBKR 当前净值', '汇率按运行日最新', '绿色 = 真实数据',
+                 '历史平均年化', '历史平均 14%', '历史平均 10%', '香港真实价格', '账户历史 TWR · 自动填入']:
+        assert text not in html
+    for text in ['合成初始净资产', '假设年化', '合成路径 TWR', '汇率固定为 USD/HKD 7.8']:
+        assert text in html

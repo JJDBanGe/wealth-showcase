@@ -14,7 +14,7 @@ from . import config, charts
 
 def build_report_controls():
     """输出离线演示标识与开发时间线入口。"""
-    return '<div class="info-note"><b>FICTIONAL DATA · 合成数据演示</b> ｜ <a href="timeline.html">查看真实开发时间线</a></div>'
+    return '<div class="info-note"><b>FICTIONAL DATA · 合成数据演示</b> ｜ <a href="timeline.html">查看项目演进</a></div>'
 
 
 def build_report_controls_js():
@@ -875,8 +875,8 @@ def build_js(txns, js_cfg, cat_colors):
     if ($('rateToolbar')) $('rateToolbar').classList.toggle('twr-mode', twrMode);
     if ($('twrStatus')) {{
       $('twrStatus').hidden = !twrMode;
-      $('twrStatus').textContent = TWR_MANUAL ? '已手动调整 · 仅用于模拟，历史收益不变'
-        : (CFG.TWR_IS_REAL ? '账户历史 TWR · 自动填入' : '模拟参考值 · 暂无账户 TWR');
+      $('twrStatus').textContent = TWR_MANUAL ? '已手动调整 · 仅用于模拟，合成收益曲线保持不变'
+        : (CFG.HAS_TWR_PATH ? '合成路径 TWR · 由示例日收益计算' : '演示假设值 · 可手动调整');
     }}
     var annual = RATES[rateKey], r = Math.pow(1+annual,1/12)-1;
     var years = []; for (var y=0;y<=10;y++) years.push(String(y));
@@ -1106,7 +1106,7 @@ def build_js(txns, js_cfg, cat_colors):
         el.className = value > 0 ? 'gain' : value < 0 ? 'loss' : '';
       }}); }});
       $('returnPeriodDesc').textContent = period.start + '~' + period.end + '，' + period.days + ' 天'
-        + (period.partial ? ' · 历史不足，按可用区间' : '') + ' · 股票、期权与现金整体账户 · USD';
+        + (period.partial ? ' · 演示可用区间' : '') + ' · 股票、期权与现金整体账户 · USD';
     }});
     document.querySelectorAll('.return-chart').forEach(function(svg) {{
       var rows = JSON.parse(svg.getAttribute('data-series')), panel = svg.parentElement;
@@ -1189,13 +1189,13 @@ def build_js(txns, js_cfg, cat_colors):
         if (window.requestAnimationFrame) window.requestAnimationFrame(run); else setTimeout(run, 16);
       }}, {{passive: true}});
     }}
-    // TWR 年化可手填（IBKR TWR 模式下生效）：改完立刻重绘曲线与大额支出判定
+    // TWR 年化可手填（演示 TWR 模式下生效）：改完立刻重绘曲线与大额支出判定
     if ($('twrInput')) $('twrInput').addEventListener('input', function() {{
       var v = parseFloat(this.value);
       if (isNaN(v) || v <= -100) return;
       TWR_MANUAL = true;
       RATES.twr = v / 100;
-      RATE_LABELS.twr = 'IBKR TWR · 模拟年化 ' + v.toFixed(1) + '%（手动填写）';
+      RATE_LABELS.twr = '演示 TWR · 假设年化 ' + v.toFixed(1) + '%（手动填写）';
       if ($('rateSel') && $('rateSel').value === 'twr') {{ renderSnowball('twr'); checkBigSpend(); }}
     }});
     ['bigSpend', 'bsTimes'].forEach(function(id){{ if ($(id)) $(id).addEventListener('input', checkBigSpend); }});
@@ -1207,7 +1207,7 @@ def build_js(txns, js_cfg, cat_colors):
 
 
 def build_cash_html(cash):
-    """把「真实可动用现金 / 应急金 / 可花现金」做成卡片内容。
+    """把「演示可动用现金 / 应急金 / 可花现金」做成卡片内容。
     cash 来自 core.cash_panel()；可花现金也是下面「能买什么」梯度的计算基准。"""
     spendable = cash["spendable_hkd"]
     cash_total = cash["cash_hkd"]
@@ -1247,11 +1247,11 @@ def build_cash_html(cash):
         src_rows.append('银行储蓄余额 <b>未读到</b>（流水里没有 Balance 列）')
     if cash.get("ibkr_usd") is not None:
         note = '（负数 = 用了保证金）' if cash["ibkr_usd"] < 0 else ''
-        src_rows.append(f'IBKR 现金 <b>${fmt(cash["ibkr_usd"])}</b>'
+        src_rows.append(f'演示投资账户现金 <b>${fmt(cash["ibkr_usd"])}</b>'
                         f'（≈ {fmt(abs(cash["ibkr_hkd"]))} HKD{note}）'
                         + (f' · {escape(cash["ibkr_source"])}' if cash.get("ibkr_source") else ''))
     else:
-        src_rows.append('IBKR 现金 <b>未接入</b>（Gateway 和 Flex 均无可用现金数据）')
+        src_rows.append('演示投资账户现金 <b>未接入</b>（未提供合成现金快照）')
     if debt_missing:
         src_rows.append('信用卡未偿还欠款 <b style="color:#B26A00">待补充</b>（交易流水不等于欠款余额）')
     else:
@@ -1303,12 +1303,12 @@ def build_cash_html(cash):
         next_text = ""
 
     note = (f'<div class="info-note" style="margin-top:12px"><b>怎么算：</b>'
-            f'净现金 = 银行储蓄余额 + IBKR 现金 − 未偿还信用卡欠款；应急金 = {cash["emergency_months"]:.0f} × 月必要支出'
+            f'净现金 = 演示银行余额 + 演示投资账户现金 − 未偿还信用卡欠款；应急金 = {cash["emergency_months"]:.0f} × 月必要支出'
             f'（房租 + 必要消费 = {fmt(cash["essential_monthly"])} HKD/月）；'
             f'<b>可花现金 = 净现金 − 应急金</b>；未提供欠款时仅展示未扣欠款的上限。'
             f'下面这张清单用可花现金算进度（旧版的「消费蓄水池余额」= 计算月结余，和「月结余」是同一个数，已合并到这里）。<br>'
-            f'<b>两个注意：</b>① 银行余额是最近一次交易时的快照（有滞后），IBKR 现金优先取 Gateway 当前快照，不可用时取 Flex 最近净值行，来源日期见上方；'
-            f'② 如果短期债券/货币基金不在 IBKR 账户里，别忘了把它也算进现金。</div>')
+            f'<b>两个注意：</b>① 本页银行和投资账户现金均来自固定合成快照，日期见上方；'
+            f'② 演示未计入其他现金等价资产。</div>')
     return kpi + src_html + unlocked_text + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px">' + tier_html + '</div>' + next_text + note
 
 
@@ -1422,7 +1422,7 @@ def render_report(data, cf, sim_series, sim_years, freedom_ladder,
     month_suffix = "至今" if month_level == "in_progress" else ""
 
     cash_card_html = build_cash_html(cash) if cash else (
-        '<div class="info-note">未接入现金数据（需要银行流水里的 Balance 列 + IBKR 现金）。</div>')
+        '<div class="info-note">未提供合成现金快照。</div>')
 
     if opt_monthly:
         rows_html = ""
@@ -1455,7 +1455,7 @@ def render_report(data, cf, sim_series, sim_years, freedom_ladder,
             f'<tbody>{rows_html}</tbody></table>'
             '<div class="info-note" style="margin-top:12px"><b>两种口径怎么读：</b><br>'
             '① <b>开仓现金流入</b> = 只统计 `openCloseIndicator = O` 的开仓净现金（已扣佣金与交易费）；<br>'
-            '② <b>Close 已实现收益</b> = IBKR 的 `fifoPnlRealized`，按平仓日归集；Close 数量按 IBKR 的 `openCloseIndicator = C` 统计，即使该笔收益为 0 也会计入；<br>'
+            '② <b>Close 已实现收益</b>：演示按平仓日归集的收益，采用与源项目相同的字段结构；Close 数量按 IBKR 的 `openCloseIndicator = C` 统计，即使该笔收益为 0 也会计入；<br>'
             '③ <b>全部交易净现金流</b> = 当月所有开仓和 Close 交易的净现金，用来和现金账户核对。<br>'
             f'<b>数量核对：</b>上表“开仓/Close 数量”按 IBKR 的组合订单分组；累计实际腿数量约为开仓 {tot_open_qty:,.0f} 张、Close {tot_close_qty:,.0f} 张，数量差约 {tot_open_qty - tot_close_qty:,.0f} 张。'
             '同一组合的一组长腿和短腿按 1 组计，10 组同样的组合按 10 组计；到期日自动生成的两条腿按买卖两侧配对，单腿交易按实际数量计数。<br>'
@@ -1463,7 +1463,7 @@ def render_report(data, cf, sim_series, sim_years, freedom_ladder,
             '那几个月「已实现」会偏低；ⓑ 到期和平仓可能集中发生在部分交易日，所以周内数据看起来是"跳着走"的，'
             '本演示不会自动刷新或连接券商。</div>')
     else:
-        opt_monthly_html = '<div class="info-note">未接入 IBKR Flex（启用后这里会按月份列出期权收入的两种口径）。</div>'
+        opt_monthly_html = '<div class="info-note">尚未提供合成期权月度数据。</div>'
     if opt_monthly:
         latest_opt = opt_monthly[-1]
         option_summary_html = (
@@ -1482,7 +1482,7 @@ def render_report(data, cf, sim_series, sim_years, freedom_ladder,
         '<div class="section"><div class="section-header option-opening-head" id="optionOpeningsHead"><div class="section-title">Option Opening Details</div>'
         '<div class="section-desc">历史成交按具体日期逐笔列示；虚值距离仅显示卖出腿</div></div><div class="chart-card option-table-card"><table class="option-openings-table option-sticky"><colgroup><col style="width:11%"><col style="width:8%"><col style="width:7%"><col style="width:17%"><col style="width:24%"><col style="width:22%"><col style="width:11%"></colgroup><thead><tr>'
         '<th>成交日期</th><th>标的</th><th>数量</th><th>策略</th><th>行权价</th><th>短腿虚值距离</th><th>到期日</th></tr></thead><tbody>'
-        + (opening_rows or '<tr><td colspan="7">未接入 IBKR Flex 期权明细</td></tr>') + '</tbody></table>'
+        + (opening_rows or '<tr><td colspan="7">尚未提供合成期权明细</td></tr>') + '</tbody></table>'
         '<div class="info-note option-note">行权价按Put、Call分行，先SELL、后BUY。虚值距离按成交日标的未复权收盘价计算，仅展示卖出腿；Iron Condor展示Put、Call两条短腿。正值为虚值，负值为实值，不代表成交瞬间距离；缺失行情显示具体日期和原因。</div></div></div>')
     stock_positions = stock_positions or []
     equity_extra = equity_extra or {}
@@ -1523,7 +1523,7 @@ def render_report(data, cf, sim_series, sim_years, freedom_ladder,
         rate_labels["twr"] = (
             f"演示 TWR ·  {twr_note.split('，')[-1]}{cumulative} → 年化 {twr_annual*100:.1f}%（回溯值）"
         )
-    twr_is_real = twr_annual is not None
+    has_twr_path = twr_annual is not None
 
     return_rows = ""
     for key, label, caption, total, annual in (
@@ -1541,7 +1541,7 @@ def render_report(data, cf, sim_series, sim_years, freedom_ladder,
             f'<div class="return-value annual"><dt>年化收益率</dt><dd id="return-{key}-annual" class="{annual_class}">{annual_text}</dd></div>'
             f'</dl><div class="return-caption">{caption}</div></div>'
         )
-    returns_desc = twr_note if twr_is_real else "暂无可用 IBKR 收益数据"
+    returns_desc = twr_note if has_twr_path else "尚未提供合成收益路径"
     performance_periods = performance_periods or {}
     period_controls = ''.join(
         f'<button type="button" data-return-period="{key}" aria-pressed="{"true" if key == "ALL" else "false"}"'
@@ -1623,7 +1623,7 @@ def render_report(data, cf, sim_series, sim_years, freedom_ladder,
         "CATS": list(config.CATS),
         "DAYS_PER_MONTH": config.DAYS_PER_MONTH,
         "DEFAULT_RATE": config.DEFAULT_RATE,
-        "TWR_IS_REAL": twr_is_real,
+        "HAS_TWR_PATH": has_twr_path,
 
         "CALC_MONTH": month_key,
         "BIG_SPEND_THRESHOLD": cf["mindless_cooling"],
@@ -1673,7 +1673,7 @@ def render_report(data, cf, sim_series, sim_years, freedom_ladder,
         utility_note = (f"<div class='info-note'><b>固定生活费月度预算：</b>房租 {fmt2(cf['rent'])} + 水电煤网 {fmt2(cf['utility'])} = {fmt2(cf['fix'])} HKD/月。"
                         f"<table><thead><tr><th style='width:12%;text-align:center'>项目</th><th style='width:18%;text-align:center'>HKD/月</th><th style='width:70%'>来源与口径</th></tr></thead><tbody>{rows_html}</tbody></table>"
                         f"{deposit_note}<br>押金仅计入付款当月现金流，不计入月均生活成本或应急金。"
-                        "Tab1 显示实际固定账单扣款，保留真实日期；房租及未接入 Visa 的网费按手动月额计入 Tab2。"
+                        "Tab1 显示实际固定账单扣款，保留示例日期；房租及未接入 Visa 的网费按手动月额计入 Tab2。"
                         "水费有收费账单后需核对覆盖期；暂计 0 不代表永久免缴。</div>")
 
 
@@ -1743,7 +1743,7 @@ def render_report(data, cf, sim_series, sim_years, freedom_ladder,
 
   <div class="section">
     <div class="section-header"><div class="section-title" id="secTitle">品类消费（全部月份）</div>
-    <div class="section-desc"><span class="tag tag-real">真实</span> 占比 + 金额（随上方月份筛选联动）</div></div>
+    <div class="section-desc"><span class="tag tag-real">合成</span> 占比 + 金额（随上方月份筛选联动）</div></div>
     <div style="display:flex;gap:14px;flex-wrap:wrap">
       <div class="chart-card" style="flex:1 1 300px;min-width:0">
         <div class="chart-title">品类占比</div>
@@ -1836,7 +1836,7 @@ def render_report(data, cf, sim_series, sim_years, freedom_ladder,
 
   <div class="section">
     <div class="section-header"><div class="section-title">② 当前可花现金（存量口径）</div>
-    <div class="section-desc">真实现金 − 应急金 = 可花现金 ｜ 支出只从现金/短债出，不动股票</div></div>
+    <div class="section-desc">演示现金 − 应急金 = 可花现金 ｜ 支出只从现金/短债出，不动股票</div></div>
     <div class="chart-card">
       {cash_card_html}
     </div>
@@ -1890,13 +1890,13 @@ def render_report(data, cf, sim_series, sim_years, freedom_ladder,
 所以只要单次 ≤ 月结余就不会动到应急金；「每年一次 × N」= 每 12 个月一次，中间累积的结余更多，压力最小。
 判断口径统一为「模拟期内的<b>现金最低点</b>」和应急金比较。<br>
 <b>判定对象是「累计金额」</b>（单次金额 × 次数），不是单次——否则"每次 5,000、每月一次"这类重复消费每次都会被判成无影响；同时会列出"本月已发生的大额消费"（单笔 ≥ 单笔冷静期额度，从流水自动筛选），避免已经花掉的那几次被忽略。<br>
-<b>口径：</b>支出只从现金/短债出、不卖股票，所以主判断用「可花现金 = 真实现金 − 应急金」；「卖股票」那一栏只在③的情况下才需要看，它用的是原来的口径（按选定年化逐月模拟 FIRE 推迟）。</div>
+<b>口径：</b>支出只从现金/短债出、不卖股票，所以主判断用「可花现金 = 演示现金 − 应急金」；「卖股票」那一栏只在③的情况下才需要看，它用的是原来的口径（按选定年化逐月模拟 FIRE 推迟）。</div>
     </div>
   </div>
 
   <div class="section">
     <div class="section-header"><div class="section-title">滚雪球预测（10 年 · 单位：USD）</div>
-    <div class="section-desc"><span class="tag tag-real">P0 真实</span> ${fmt(p0_usd)}（IBKR 净值）· FIRE 目标 ${fmt(fire_target_usd)}（SWR {config.SWR*100:.1f}% 推导）· 定投 {', '.join(l for l, _ in config.INVEST_LEVELS)}</div></div>
+    <div class="section-desc"><span class="tag tag-real">P0 演示</span> ${fmt(p0_usd)}（合成净资产）· FIRE 目标 ${fmt(fire_target_usd)}（SWR {config.SWR*100:.1f}% 推导）· 定投 {', '.join(l for l, _ in config.INVEST_LEVELS)}</div></div>
     <div class="chart-card">
       <div class="rate-toolbar twr-mode" id="rateToolbar">
         <div class="rate-source"><label for="rateSel">收益率来源：</label>
@@ -1908,7 +1908,7 @@ def render_report(data, cf, sim_series, sim_years, freedom_ladder,
         <input id="twrInput" type="number" step="0.1" min="-99.9" value="{rates['twr']*100:.1f}">
         <span>%</span></div>
         <div class="rate-meta"><span id="rateLabel"></span>
-        <span id="twrStatus">{"账户历史 TWR · 自动填入" if twr_is_real else "模拟参考值 · 暂无账户 TWR"}</span></div>
+        <span id="twrStatus">{"合成路径 TWR · 由示例日收益计算" if has_twr_path else "演示假设值 · 可手动调整"}</span></div>
       </div>
       <div class="chart-title">三档定投 · 到 FIRE 的路径（USD）
         <span style="font-weight:400;font-size:11.5px;color:#94A3B8">纵轴到 FIRE 目标（{fmt(fire_target_usd*1.15)} 封顶）；曲线画到达到 FIRE 的那一刻为止（终点圆点 = 达标），10 年终点见下表</span>
@@ -1922,10 +1922,10 @@ def render_report(data, cf, sim_series, sim_years, freedom_ladder,
       </table>
     </div>
     <div class="info-note"><b>口径：</b><br>
-① P0 = ${fmt(p0_usd)} USD（IBKR 当前净值，汇率按运行日最新 USD/HKD 换算）<br>
+① P0 = ${fmt(p0_usd)} USD（合成初始净资产，使用固定演示汇率 USD/HKD {usd_hkd}）<br>
 ② 月收益 r = (1+年化)^(1/12)−1，月末投入<br>
-    ③ 期权收入用<b>平仓已实现</b>口径（IBKR 的 fifoPnlRealized 按平仓日归集：几个月前卖出、本月才买回/到期的仓位记在本月；{opt_note or f"未启用 Flex 时暂定 ${fmt(config.OPT_TMP_USD)} USD/月"}）<br>
-④ 收益率来源三选一：<b>IBKR TWR</b>（账户时间加权收益率，自动含现金拖累，最贴近你的真实配置；{"已接入 IBKR Flex 自动获取" if twr_is_real else "待接入 IBKR Flex 自动获取，现为占位值"}）/ 纳斯达克 100 历史平均 14% / 标普 500 历史平均 10%</div>
+    ③ 期权收入使用<b>合成的月度已实现收益</b>，示例金额用于展示月度收支；{opt_note or "固定演示输入"}<br>
+④ 收益情景三选一：<b>合成路径 TWR</b>（由虚构日收益计算）/ 纳指情景（假设年化 {config.RATES["nasdaq"]*100:.0f}%）/ 标普情景（假设年化 {config.RATES["sp500"]*100:.0f}%）。均为演示输入，可切换或调整，不表示真实账户业绩或指数历史回报。</div>
   </div>
 
   <div class="section">
@@ -1939,7 +1939,7 @@ def render_report(data, cf, sim_series, sim_years, freedom_ladder,
           {ladder_rows}
         </tbody>
       </table>
-      <div class="info-note" style="margin-top:12px"><b>动态计算：</b>每级月成本基于香港真实价格（房租参考港岛/尖沙咀优质地段、旅行参考年预算18万等），目标净资产 = 月成本×12÷{config.SWR*100:.1f}%（与滚雪球、大额支出的 FIRE 目标同一口径）；<b>柱内填充 = 当前净资产 ÷ 该级目标（完成度，柱顶标注百分比）</b>，柱高仍按等级递升形成阶梯；已达成 = 当前净资产 ≥ 目标，未达成按定投 ${fmt(config.FIXED_INVEST_USD)}/月、年化 {rates[config.DEFAULT_RATE]*100:.1f}%（默认 {rate_labels[config.DEFAULT_RATE].split(' · ')[0]}）测算达成年限。<b>配色与 Tab1 一致</b>（填充色轮转 Tab1 品类色）。</div>
+      <div class="info-note" style="margin-top:12px"><b>动态计算：</b>每级月成本使用可配置的演示预算，目标净资产 = 月成本×12÷{config.SWR*100:.1f}%（与滚雪球、大额支出的 FIRE 目标同一口径）；<b>柱内填充 = 当前净资产 ÷ 该级目标（完成度，柱顶标注百分比）</b>，柱高仍按等级递升形成阶梯；已达成 = 当前净资产 ≥ 目标，未达成按定投 ${fmt(config.FIXED_INVEST_USD)}/月、年化 {rates[config.DEFAULT_RATE]*100:.1f}%（默认 {rate_labels[config.DEFAULT_RATE].split(' · ')[0]}）测算达成年限。<b>配色与 Tab1 一致</b>（填充色轮转 Tab1 品类色）。</div>
     </div>
   </div>
 </div>
@@ -1965,7 +1965,7 @@ def render_report(data, cf, sim_series, sim_years, freedom_ladder,
 <!-- ============ TAB 4 正股 ============ -->
 <div id="tab4" style="display:none">
   <div class="tab-intro">
-  <div class="tab-data-note">历史账户收益截至：{(performance_periods.get("ALL") or {}).get("end", str((alloc_kpi or {}).get("last", "未提供")))}</div>
+  <div class="tab-data-note">合成收益路径截至：{(performance_periods.get("ALL") or {}).get("end", str((alloc_kpi or {}).get("last", "未提供")))}</div>
   <div class="tab-data-note">{escape(stock_data_desc)}</div>
   </div>
   {returns_html}
@@ -1984,8 +1984,8 @@ def render_report(data, cf, sim_series, sim_years, freedom_ladder,
 </div>
 
 <div class="footnote">
-  <p><sup>1</sup> 绿色 = 真实数据（银行流水解析）；红色 = 暂定值（期权收入，IBKR Flex 未启用时按月匹配暂定 ${fmt(config.OPT_TMP_USD)} USD/月）。</p>
-  <p><sup>2</sup> 汇率按运行日最新 USD/HKD 换算；年化收益率三选一（IBKR TWR 实际年化 / 纳斯达克历史平均 14% / 标普 500 历史平均 10%），均为历史参考，非收益承诺。</p>
+  <p><sup>1</sup> 本页交易、现金、资产及期权收入均为合成输入；颜色区分指标类别，不表示真实数据认证。</p>
+  <p><sup>2</sup> 汇率固定为 USD/HKD {usd_hkd}；收益率来自合成路径或可配置的情景假设，用于演示复利和交互，不是历史业绩或收益承诺。</p>
   <p><sup>3</sup> Tab2 月度口径：可支配、月度预算结余使用固定账单月均；瀑布图使用实际固定支出，按 Tab2 标注的收支月份计算；可花现金取账户现金减未偿还信用卡欠款及应急金，欠款未知时只展示上限；品类消费随 Tab1 月份筛选联动（<span id="fnRange">全部月份</span>）。</p>
   <p><sup>4</sup> 图表为纯 SVG/CSS、搜索与切换为原生 JS，零外部依赖，本地打开即用。</p>
 </div>
