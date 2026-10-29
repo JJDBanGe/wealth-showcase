@@ -1,0 +1,5 @@
+{
+  "source": "option-system/option_system/templates/workspace.html",
+  "source_style_sha256": "93832256d93fbcd4ff016b539aacb1631330aa22f66daaa451669427d9f0ef92",
+  "notice": "Original CSS, page sections and display renderers retained. Live transport and control bindings replaced with an offline synthetic adapter. No broker code or private snapshot copied."
+}

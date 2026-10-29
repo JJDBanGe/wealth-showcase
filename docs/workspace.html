@@ -1,0 +1,626 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Option Workspace · PAPER</title>
+<style>
+.calendar-sync-summary{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px 18px;font-weight:600}.calendar-sync-summary small{font-weight:400}.calendar-sync-list{display:grid;gap:8px}.calendar-sync-row{display:grid;grid-template-columns:270px minmax(0,1fr) auto;align-items:baseline;gap:4px 12px;padding:3px 0;font-size:13px}.calendar-sync-row strong{font-size:12px;font-weight:600}.calendar-event-name.fomc{color:#96701f}.calendar-event-name.cpi{color:#325d91}.calendar-sync-time{font-size:11px;color:var(--muted);white-space:nowrap}@media(max-width:760px){.calendar-sync-row{grid-template-columns:1fr}.calendar-sync-time{white-space:normal}.workspace-heading>a{margin-left:0}}.calendar-sync-row span{overflow-wrap:anywhere}.calendar-sync-row small{flex-basis:100%}.calendar-source-list{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:12px;color:#64748b;font-size:12px}
+.quota-panel{padding:16px 18px;border:1px solid #e5ebf2;border-radius:10px;background:#f8fafc;margin:0 0 18px}.quota-top{display:flex;align-items:center;justify-content:space-between;gap:12px}.quota-top h3{font-size:13px;margin:0}.quota-top small{font-size:11px;font-weight:400;margin-left:8px}.quota-top>span{font-size:11px;color:#64748b}.quota-body{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin-top:14px;align-items:start}.quota-cell{min-width:0;padding:0 22px;border-left:1px solid #e5ebf2}.quota-cell:first-child{padding-left:0;border-left:0}.quota-cell:last-child{padding-right:0}.quota-period{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 10px;min-height:20px}.quota-period small{color:#64748b;font-size:12px}.quota-limit{font-size:11px;color:#8290a1}.quota-number{display:block;color:#203d5b;font-size:24px;line-height:1.3;font-weight:650;font-variant-numeric:tabular-nums;margin:6px 0 10px}.quota-number span{font-size:12px;color:#64748b;font-weight:400;margin-left:5px}.quota-track{display:flex;height:6px;max-width:240px;border-radius:4px;overflow:hidden;background:#e5ebf2}.quota-track .quota-used{background:#456a90}.quota-track .quota-reserved{background:#d6ad53}.quota-legend{display:flex;flex-wrap:wrap;gap:3px 14px;margin-top:6px;color:#64748b;font-size:11px}.quota-legend span::before{content:"";display:inline-block;width:6px;height:6px;border-radius:2px;background:#456a90;margin-right:4px}.quota-legend span:nth-child(2)::before{background:#d6ad53}.quota-note{font-size:12px;color:#64748b;margin-top:10px}.quota-pending{background:repeating-linear-gradient(120deg,#edf1f5,#edf1f5 8px,#e4eaf0 8px,#e4eaf0 16px)}
+@media(max-width:760px){.quota-panel{padding:14px}.quota-body{grid-template-columns:1fr;gap:12px}.quota-cell,.quota-cell:first-child,.quota-cell:last-child{padding:10px 0 0;border-left:0;border-top:1px solid #e5ebf2}.quota-cell:first-child{padding-top:0;border-top:0}.quota-period{min-height:0}.quota-number{margin:5px 0 8px}.quota-top{flex-wrap:wrap}}
+
+:root{color-scheme:light;--ink:#1c2d42;--muted:#64748b;--line:#e5ebf2;--navy:#203d5b;--soft:#f6f8fb}
+*{box-sizing:border-box}
+body{margin:0;background:#f3f6fa;color:var(--ink);font:14px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif;text-align:left}
+main{max-width:1200px;margin:0 auto;padding:36px 32px 48px}
+h1,h2,h3{color:#172b43;text-align:left;line-height:1.35;letter-spacing:-.02em}
+h1{font-size:29px;margin:8px 0 14px;font-weight:700}h2{font-size:18px;margin:0 0 16px;font-weight:650}h3{font-size:15px;margin:24px 0 12px;font-weight:650}
+p{margin:10px 0}small{color:var(--muted);font-size:12px;line-height:1.65}
+main>small{display:block}#updated{font-variant-numeric:tabular-nums}
+article{background:white;border:1px solid var(--line);border-radius:14px;padding:24px;margin:20px 0;box-shadow:0 2px 6px #172b4303}
+article>p:last-child{margin-bottom:0}article>small{display:block;margin-top:6px}#check-details{scroll-margin-top:20px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0}
+#funds{padding:8px 24px}#funds>div{text-align:left;padding:18px 16px 18px 0;min-width:0}#funds>div:nth-child(n+4){border-top:1px solid var(--line)}
+.value{font-size:25px;line-height:1.3;font-weight:650;margin-top:8px;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+button{font:inherit;font-size:13px;font-weight:550;padding:10px 15px;border:1px solid #dbe4ee;border-radius:8px;background:var(--soft);color:var(--navy);margin:0 8px 10px 0;cursor:pointer;transition:background .15s,border-color .15s}
+button:hover:not(:disabled){background:#eaf0f7;border-color:#bdcddd}button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #99bce2;outline-offset:3px}
+#arm{background:var(--navy);color:white;border-color:var(--navy)}#arm:hover:not(:disabled){background:#2b5175}#restart{background:white;color:#64748b}
+a{color:#285b9d;text-underline-offset:3px}.pill{color:#785000;background:#fff0c2;padding:6px 12px;border-radius:20px;display:inline-block}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.7 ui-monospace,monospace}#notice{color:#965813}#notice:empty,#restart-status:empty,#reasons:empty{display:none}
+#management-banner{border-left-width:4px;background:#fff}#management-banner h2{margin:0}.workspace-heading{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px}.workspace-heading>span{font-size:12px;color:#335979;background:#f0f4f8;padding:4px 9px;border-radius:6px}.workspace-heading>a{margin-left:auto;font-size:12px}.workspace-controls{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}.workspace-buttons{display:flex;align-items:center;flex-wrap:wrap;gap:8px}.workspace-buttons button{margin:0}.workspace-controls>p{font-size:13px}.workspace-controls>p:empty{display:none}#management-detail{color:#516176}#management-banner:has(h2:empty){display:none}
+.management-data{margin:16px 0 0;padding-top:14px;border-top:1px solid var(--line);}.management-data[hidden],.management-data>[hidden]{display:none}.management-data>span{display:inline-block;border-radius:6px;padding:4px 9px;font-size:12px;font-weight:600}.management-data p{margin:6px 0 0;color:#64748b;font-size:13px;line-height:1.7}.data-valid{background:#eef7f0;color:#25613a}.data-wait{background:#fff8e5;color:#785000}.data-stop{background:#fff1f0;color:#a52626}.data-neutral{background:#f3f6fa;color:#607089}.management-actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px 24px;margin-top:18px}.management-actions>details{flex:0 1 auto;min-width:0}.management-actions summary{white-space:nowrap}
+summary{cursor:pointer;line-height:1.4;min-height:24px;display:flex;align-items:center;justify-content:flex-start;gap:8px;list-style:none;color:#335979;font-size:13px;font-weight:550}summary::-webkit-details-marker{display:none}summary::before{content:"";flex:none;width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:6px solid currentColor;transform-origin:3px 4px}details[open]>summary::before{transform:rotate(90deg)}
+.management-panel{margin-top:16px;overflow-x:auto}.management-panel[hidden]{display:none}details p{line-height:1.7}
+.check-heading{padding-bottom:16px;border-bottom:1px solid var(--line);margin-bottom:20px}.check-topline{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px 20px;margin-bottom:12px}.check-topline h2{margin:0}
+#check-summary{margin:0;font-size:12px;font-weight:600;border-radius:6px;padding:5px 10px;background:var(--soft);color:var(--muted)}#check-summary.check-issue{color:#a52626;background:#fff1f0}#check-summary.check-wait{color:#785000;background:#fff8e5}#check-summary.check-pass{color:#25613a;background:#eef7f0}
+.check-metadata{display:flex;flex-wrap:wrap;justify-content:flex-start;gap:4px 24px;color:var(--muted);font-size:12px;line-height:1.8;margin-top:4px}.check-metadata span{white-space:nowrap}.check-metadata b{font-weight:500;color:#43546b}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}td,th{text-align:center;vertical-align:middle;padding:12px 14px;border-bottom:1px solid #edf0f5}th{background:var(--soft);color:#63758b;font-size:12px;font-weight:600;white-space:nowrap}tbody tr:last-child td{border-bottom:0}tbody tr:hover{background:#fafcff}
+.position-card{border:1px solid var(--line);border-radius:12px;margin-top:16px;padding:20px}.position-title{display:flex;align-items:center;justify-content:flex-start;flex-wrap:wrap;gap:8px 14px;margin:0 0 16px;font-size:16px}.position-name{font-weight:650}.position-note{font-size:12px;color:var(--muted)}.position-card details>summary{justify-content:flex-start;font-size:13px;margin-top:16px}.position-status{font-size:12px;color:var(--muted);text-align:left;margin:12px 0}.position-status .stale{color:#965813}
+.position-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0;text-align:left}.position-metrics>div{padding:14px;background:var(--soft);border-radius:8px}.position-metrics small{display:block;margin-bottom:6px}.position-metrics>div>span{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.025em}
+.position-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px}.position-table{min-width:0;table-layout:fixed}.position-table td,.position-table th{white-space:normal;overflow-wrap:anywhere;padding:8px 5px;font-size:12px;line-height:1.4}.position-combination{padding:12px 0;border-top:1px solid var(--line)}.position-combo-title{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;margin:0;font-size:14px;font-weight:550;line-height:1.4}.position-combo-title>span:last-child{padding:2px 8px;background:#edf2f7;color:#435b74;border-radius:5px;font-size:12px;line-height:20px}.position-combination .position-scroll{margin-top:12px}.position-combination .position-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin:10px 0 6px;border:1px solid var(--line);border-radius:8px;background:#f8fafc;overflow:hidden}.position-combination .position-metrics>div{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0;min-height:38px;padding:7px 12px;background:transparent;border-radius:0;border-left:1px solid var(--line)}.position-combination .position-metrics>div:first-child{border-left:0}.position-combination .position-metrics small{margin:0;line-height:1.4;font-size:12px}.position-combination .position-metrics>div>span{font-size:15px;font-weight:600;line-height:1.4;white-space:nowrap}.position-combination details>summary{margin-top:8px}.position-table .quantity-cell,.quantity-cell{text-align:center}.pnl-gain{color:#25613a}.pnl-loss{color:#a52626}
+.check-scroll{overflow-x:auto;margin-top:12px;border:1px solid var(--line);border-radius:10px}.check-table{table-layout:fixed;min-width:800px}.check-table-full{min-width:1060px}.check-table .check-col-label{width:25%}.check-table .check-col-full-label{width:300px}.check-table .check-col-group{width:120px}.check-table .check-col-result{width:16%}.check-table .check-col-time{width:18%}
+.check-table th,.check-table td{padding:6px 14px;line-height:1.4;vertical-align:middle}.check-table .check-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}.check-table .check-result,.check-table .check-time{white-space:nowrap}.check-table .check-time{color:var(--muted);font-size:12px}
+.check-table td.check-basis-cell{text-align:center}.check-table th.check-basis-cell{text-align:center}.check-basis{min-width:0;min-height:2.8em;display:flex;align-items:center;justify-content:center}.check-preview{display:block;white-space:normal;overflow:visible;overflow-wrap:anywhere}
+.check-scroll-full{max-height:460px;overflow:auto}.check-scroll-full thead{position:sticky;top:0;z-index:1}
+#check-details>.complete-checks{margin-top:18px}#positions>p,#signals,#contract-note{color:var(--muted);font-size:13px}#order-progress details{margin-top:12px}#events{overflow-x:auto;margin-top:14px}
+.order-card{border:1px solid var(--line);border-radius:9px;margin-top:10px;overflow:hidden}.order-card>summary,.order-list-head{display:grid;grid-template-columns:16px 84px minmax(170px,1fr) 76px 126px 180px 66px;align-items:center;gap:10px}.order-card>summary{padding:12px 14px;background:#fafbfd}.order-card>summary>span{min-width:0;overflow-wrap:anywhere}.order-card>summary .order-quantity,.order-card>summary .order-status{text-align:center}.order-card>summary .order-number{text-align:right}.order-list-head{margin:0 1px;padding:6px 14px;color:var(--muted);font-size:11px}.order-list-head>span:nth-child(4),.order-list-head>span:nth-child(5){text-align:center}.order-list-head>span:last-child{text-align:right}.order-trading-day{font-size:13px;font-weight:600;color:var(--ink);margin:18px 0 6px}.order-action{font-weight:650;color:var(--ink)}.order-summary-time,.order-number{font-size:12px;color:var(--muted)}.order-number{margin-left:0}.order-body{padding:16px}.order-body h3{font-size:14px;margin:18px 0 8px}.order-body h3:first-child{margin-top:0}.order-contract>span,.order-contract>small{display:block}.order-contract>small{font-size:12px;font-weight:500;color:var(--muted);margin-top:3px}.order-note{color:var(--muted);font-size:12px}.order-leg-table{table-layout:fixed}.order-leg-table td,.order-leg-table th{padding:9px 8px;white-space:normal;overflow-wrap:anywhere}.order-wait{padding:8px 12px;background:#fff8e5;color:#785000;border-radius:6px;font-size:13px}.order-reason{margin:6px 0;font-size:13px}.order-body .order-leg-table{margin:0 0 12px}.order-cashflow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:stretch;margin:0 0 16px;padding-top:12px;border-top:1px solid var(--line);gap:8px}.order-cashflow>div{min-width:0;padding:10px 14px;border-left:1px solid var(--line)}.order-cashflow>div:first-child{border-left:0}.order-cashflow span{display:block;font-size:12px;color:var(--muted);line-height:1.5}.order-cashflow strong{display:block;margin-top:5px;font-size:18px;font-weight:550;line-height:1.4;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.order-cashflow .order-net-total{background:var(--soft);border-left:0;border-radius:6px}.order-cashflow .order-net-total span{color:var(--ink);font-weight:600}.order-cashflow .order-net-total strong{font-weight:700;color:var(--ink)}.order-status{font-size:12px}.order-settlement{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;padding:16px 18px;background:var(--soft);border:1px solid var(--line);border-radius:9px;margin:0 0 16px}.order-settlement>div+div{border-left:1px solid var(--line);padding-left:18px}.order-settlement span{display:block;font-size:12px;color:var(--muted)}.order-settlement strong{display:block;font-size:24px;font-weight:650;margin:4px 0 8px;font-variant-numeric:tabular-nums}.order-settlement small{display:block;font-size:12px;line-height:1.65;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+@media(max-width:760px){.order-cashflow{grid-template-columns:repeat(2,minmax(0,1fr))}.order-cashflow>div:nth-child(3){border-left:0}.order-settlement{grid-template-columns:1fr;gap:12px}.order-settlement>div+div{border-left:0;border-top:1px solid var(--line);padding:12px 0 0}}
+@media(max-width:760px){.order-list-head{display:none}.order-card>summary{grid-template-columns:16px 76px minmax(0,1fr) 66px;gap:8px}.order-card>summary .order-status{grid-column:2;text-align:left}.order-card>summary .order-summary-time{grid-column:3}.order-card>summary .order-number{grid-column:4}.position-combination .position-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.position-combination .position-metrics>div:nth-child(odd){border-left:0}.position-combination .position-metrics>div:nth-child(n+3){border-top:1px solid var(--line)}main{padding:24px 18px 36px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}#funds>div:nth-child(n+3){border-top:1px solid var(--line)}.position-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.check-topline{align-items:flex-start}h1{font-size:25px}article{padding:20px}}
+@media(max-width:440px){main{padding:20px 12px 28px}article{padding:18px;margin:14px 0}#funds{padding:4px 18px}.value{font-size:21px}.position-card{padding:14px}.position-metrics{gap:8px}.position-metrics>div{padding:12px 10px}.position-metrics>div>span{font-size:19px}.management-actions{gap:10px 18px}.check-metadata{gap:4px 16px}button{padding:9px 12px}}
+
+.candidate-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 20px;margin:4px 0 18px}.candidate-heading h3{margin:0;font-size:18px}.candidate-meta{display:flex;flex-wrap:wrap;gap:8px 18px;color:var(--muted);font-size:13px}.candidate-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}.candidate-metric{padding:18px;background:var(--soft);border-radius:10px;min-width:0}.candidate-metric small{display:block;min-height:20px;color:var(--muted)}.candidate-metric strong{display:block;margin:8px 0 4px;font-size:25px;font-weight:600;letter-spacing:-.03em;font-variant-numeric:tabular-nums}.candidate-metric>span{font-size:12px;color:var(--muted)}.candidate-primary{background:#eef3fa}.candidate-primary strong{color:#254e78}.candidate-scroll{border:1px solid var(--line);border-radius:10px;overflow-x:auto}.candidate-table{min-width:630px}.candidate-table td{padding:15px 14px;white-space:nowrap}.candidate-side{display:inline-block;padding:4px 10px;border-radius:5px;background:#edf2f8;color:#365b80;font-size:12px}.candidate-side.buy{background:#f0f1f5;color:#596078}.candidate-footnote{margin:14px 0 0;font-size:12px;color:var(--muted);line-height:1.7}.candidate-empty{padding:24px;border:1px dashed #d5dfeb;border-radius:10px;background:#fafcff}.candidate-empty strong{display:block;margin-bottom:7px;font-size:15px}.candidate-empty p{margin:0;font-size:13px;color:var(--muted)}
+@media(max-width:760px){.candidate-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.candidate-metric{padding:14px}.candidate-metric strong{font-size:22px}}
+.calendar-observe-tag{display:inline-block;margin-left:12px;padding:3px 8px;background:var(--soft);border-radius:5px;color:var(--muted);font-size:12px;font-weight:400}.calendar-today{padding:13px 16px;border-left:3px solid #50769b;background:#f3f7fb;border-radius:5px;line-height:1.7}.calendar-today.event{border-color:#b88622;background:#fff9ec}.calendar-events{display:flex;flex-wrap:wrap;gap:12px;margin:14px 0}.calendar-event{flex:1 1 220px;padding:14px 16px;border:1px solid var(--line);border-radius:8px}.calendar-event strong{display:block;margin:5px 0}.calendar-event small,.calendar-note{color:var(--muted);font-size:12px;line-height:1.7}.calendar-event a{font-size:12px}.calendar-sources{margin-top:14px}.calendar-sources h3{font-size:13px;margin:14px 0 6px}.calendar-sources p{overflow-wrap:anywhere;color:var(--muted);font-size:12px}
+
+.audit-section+.audit-section{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+.calendar-preview-title{font-size:15px;font-weight:650;color:var(--ink);margin:20px 0 10px;line-height:1.4}
+.calendar-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:18px 0 12px}.calendar-toolbar strong{font-size:19px;letter-spacing:-.02em}.calendar-nav{display:flex;gap:6px}.calendar-nav button{margin:0;padding:5px 12px;background:white}.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border:1px solid var(--line);border-radius:10px;overflow:hidden}.calendar-weekday{text-align:center;padding:9px 0;background:var(--soft);color:var(--muted);font-size:12px}.calendar-day{min-height:88px;padding:8px;border-top:1px solid var(--line);border-right:1px solid var(--line);min-width:0}.calendar-day:nth-child(7n){border-right:0}.calendar-day.empty{background:#fafbfd}.calendar-day.today{background:#eef4fb}.calendar-day.today .calendar-date{background:var(--navy);color:white;border-radius:50%}.calendar-date{display:inline-flex;align-items:center;justify-content:center;width:25px;height:25px;font-size:13px;font-variant-numeric:tabular-nums}.calendar-day.event{background:#fffcf5}.calendar-marker{display:block;font-size:11px;line-height:1.5;margin-top:5px;padding:3px 5px;border-radius:4px;background:#f9e9c7;color:#785817;overflow-wrap:anywhere;text-decoration:none}.calendar-marker.cpi{background:#e9effa;color:#325d91}.calendar-legend{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:12px;color:var(--muted);font-size:12px}.calendar-legend span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;background:#d6ad53}.calendar-legend .cpi::before{background:#7d9fc9}.calendar-month-status{font-size:12px;color:var(--muted);margin:10px 0}.calendar-note{margin:10px 0}.calendar-events{gap:8px}.calendar-event{padding:10px 14px;background:#fafbfd}.calendar-event strong{font-size:13px;margin:2px 0}
+@media(max-width:600px){.calendar-day{min-height:70px;padding:4px}.calendar-marker{font-size:10px;padding:2px}.calendar-toolbar strong{font-size:17px}.calendar-observe-tag{margin-left:6px;font-size:11px}.calendar-nav button{padding:5px 10px}}
+
+@media(prefers-reduced-motion:reduce){button{transition:none}}
+
+#management-banner .workspace-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}#management-banner .workspace-heading h2{margin:0}#management-banner .workspace-heading a{font-size:12px;margin:0;white-space:nowrap}.workspace-status-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0}.workspace-status-grid>section,.workspace-status-grid .management-data{min-width:0;margin:0;padding:0 20px;border:0;border-left:1px solid var(--line)}.workspace-status-grid>section:first-child{padding-left:0;border-left:0}.workspace-status-grid>section:last-child{padding-right:0}.workspace-status-grid #management-data{grid-column:2}.workspace-auth{grid-column:3}#management-banner .workspace-status-grid h3,#management-banner .workspace-action-group h3{font-size:12px;font-weight:500;color:var(--muted);margin:0 0 8px;line-height:20px}#management-label,#management-data-status,#control-status{display:inline-block;max-width:100%;margin:0;padding:4px 8px;font-size:13px;font-weight:600;line-height:22px;border-radius:5px;vertical-align:middle;overflow-wrap:anywhere}#management-label,#control-status{background:var(--soft);color:#335979}.workspace-status-grid p:not(#control-status){margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.65}.workspace-controls{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}.workspace-action-group{min-width:0}.workspace-action-group+ .workspace-action-group{border-left:1px solid var(--line);padding-left:24px}.workspace-buttons{display:flex;align-items:center;flex-wrap:wrap;gap:8px}.workspace-buttons button{display:inline-flex;align-items:center;justify-content:center;min-height:40px;margin:0;padding:8px 14px;font-size:13px;font-weight:550;line-height:22px;border:1px solid #dbe4ee;border-radius:7px;background:white;color:var(--navy)}.workspace-buttons button[hidden]{display:none}.workspace-buttons #arm{background:var(--navy);border-color:var(--navy);color:white}.workspace-buttons #restart{background:white;color:var(--navy)}.workspace-feedback:empty{display:none}.workspace-feedback>p{font-size:13px;line-height:1.65;margin:12px 0 0}.workspace-feedback>p:empty{display:none}#signals.scan-metadata{display:grid;gap:4px;margin:14px 0 0;color:var(--muted);font-size:12px}.scan-metadata-row{display:grid;grid-template-columns:160px minmax(0,1fr);gap:12px;align-items:baseline}.scan-metadata-row span:last-child{font-variant-numeric:tabular-nums;color:#43546b}.scan-metadata-note{margin-top:4px;font-size:11px}
+@media(max-width:760px){.workspace-status-grid,.workspace-controls{grid-template-columns:1fr;gap:16px}.workspace-status-grid>section,.workspace-status-grid .management-data{padding:12px 0 0;border-left:0;border-top:1px solid var(--line)}.workspace-status-grid>section:first-child{padding-top:0;border-top:0}.workspace-status-grid #management-data,.workspace-auth{grid-column:auto}.workspace-action-group+ .workspace-action-group{padding:0;border-left:0}.workspace-buttons button{flex:1 1 130px}.scan-metadata-row{grid-template-columns:130px minmax(0,1fr);gap:8px}}
+#signals.scan-metadata{gap:7px;margin-top:18px;font-size:12px}.scan-metadata-heading{display:flex;align-items:baseline;gap:12px;margin-bottom:2px}.scan-metadata-heading strong{font-size:12px;font-weight:600;color:#43546b}.scan-metadata-heading small{font-size:11px;color:#8a97a7}.scan-metadata-row{grid-template-columns:148px 150px auto;gap:12px;line-height:1.6}.scan-metadata-row>span{color:#718096}.scan-metadata-row>time{color:#43546b;font-size:12px;font-weight:500;font-variant-numeric:tabular-nums}.scan-metadata-row>small{font-size:11px;color:#8a97a7}.scan-metadata-note{margin-top:2px;font-size:11px;color:#8a97a7}@media(max-width:440px){.scan-metadata-row{grid-template-columns:minmax(0,1fr) 120px auto;gap:7px}.scan-metadata-row>time{font-size:11px}}
+.candidate-help{display:inline-block;font-size:13px;font-weight:400;color:var(--muted);cursor:help;vertical-align:middle;margin-left:5px}.candidate-footnote{font-size:12px;line-height:1.65;color:var(--muted);margin-top:12px}.workspace-feedback{display:flex;align-items:baseline;gap:8px;min-height:20px;margin-top:10px}.workspace-feedback>#restart-status,.workspace-feedback>#connection-status,.workspace-feedback>#scan-status{display:none!important}.workspace-feedback>#notice{font-size:12px;line-height:20px;margin:0;color:#43546b}.workspace-feedback>#notice.notice-error{color:#a52626}.workspace-feedback>#notice.notice-success{color:#43546b}#notice-dismiss{flex:none;margin:0;padding:0 5px;min-height:20px;border:0;background:transparent;font-size:16px;line-height:20px;color:var(--muted)}#notice-dismiss[hidden]{display:none}
+</style><style>.showcase-strip{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:24px;padding:12px 16px;border:1px solid var(--line);border-radius:8px;font-size:12px;color:var(--muted)}.showcase-strip a{color:var(--navy)}.showcase-strip select{margin-left:8px;padding:6px;background:white;border:1px solid var(--line);border-radius:5px;color:var(--ink)}button:disabled{cursor:not-allowed;opacity:.55}</style>
+<main><div class="showcase-strip"><a href="index.html">← 财务报告</a><span>合成数据 · 只读演示</span><label for="scenario">场景 <select id="scenario"><option value="ready">正常持仓</option><option value="stale">行情过期</option><option value="mismatch">净仓差异</option><option value="pending">订单待确认</option></select></label></div><small>原工作台布局 · 展示版本0.1.2</small><h1>期权交易工作台</h1>
+<small id="updated"></small>
+<article id="management-banner"><header class="workspace-heading"><h2>运行控制与持仓管理</h2><a id="view-checks" href="#check-details">查看检查详情</a></header>
+<div class="workspace-status-grid"><section><h3>后台服务</h3><span id="management-label" role="status" aria-live="polite">等待核对管理状态</span><p id="management-detail"></p></section><section id="management-data" class="management-data"><h3>退出检查</h3><span id="management-data-status" class="data-neutral">等待本轮数据</span><p id="management-data-detail"></p></section><section class="workspace-auth"><h3>新增开仓</h3><p id="control-status" role="status"></p><p class="workspace-hint">本页面仅展示固定合成快照。</p></section></div>
+<div id="alerts" role="alert"></div><section class="workspace-controls"><div class="workspace-action-group"><h3>开仓操作</h3><div class="workspace-buttons"><button id="arm" title="仅授权本次会话，仍须通过全部开仓检查。">授权本次开仓</button><button id="pause" title="停止新增开仓；已有仓位是否正常管理，见顶部状态。">暂停新增开仓</button><button id="refresh" title="重新检查行情和候选，不改变授权。">立即重扫</button></div></div><div class="workspace-action-group"><h3>连接与维护</h3><div class="workspace-buttons"><button id="reconnect" title="重新连接并核对Gateway，不恢复旧开仓授权。">重新连接 Gateway</button><button id="recover" hidden title="重新核对账户、成交、挂单、净仓及净值；全部通过并备份后，仅解除历史请求超时，不授权新增。">核对并恢复管理</button><button id="restart" title="短暂中断监控，先核对挂单并备份；不恢复授权或清除接管原因。">重启工作台</button></div></div></section>
+<div class="workspace-feedback"><p id="restart-status" role="status" aria-live="polite"></p><p id="connection-status" role="status"></p><p id="scan-status" role="status" aria-live="polite"></p><p id="notice" role="status" aria-live="polite"></p><button id="notice-dismiss" type="button" aria-label="关闭操作提示" hidden>×</button></div></article>
+<article id="calendar-observation"><h2>事件日历<span class="calendar-observe-tag">仅观察，不限制开仓</span></h2><div id="calendar-view"></div></article>
+<article class="grid" id="funds"></article>
+
+<article><h2>保证金与SMA准入</h2><div id="margin-view"></div></article>
+<article id="check-details"><header class="check-heading"><div class="check-topline"><h2>检查详情</h2><p id="check-summary" role="status"></p></div><div id="management-time" class="check-metadata"></div><div id="versions" class="check-metadata"></div></header>
+<section id="management-check-section"><h3>连接与持仓核对</h3><div class="check-scroll"><table class="check-table"><colgroup><col class="check-col-label"><col class="check-col-result"><col><col class="check-col-time"></colgroup><thead><tr><th>核对项目</th><th>结果</th><th class="check-basis-cell">具体依据</th><th>检查时间</th></tr></thead><tbody id="management-checks"></tbody></table></div></section>
+<h3>新增开仓条件</h3><div class="check-scroll"><table class="check-table"><colgroup><col class="check-col-label"><col class="check-col-result"><col><col class="check-col-time"></colgroup><thead><tr><th>开仓项目</th><th>结果</th><th class="check-basis-cell">当前依据</th><th>检查时间</th></tr></thead><tbody id="checks"></tbody></table></div><div id="signals" class="scan-metadata"></div>
+<details id="other-check-section" class="complete-checks"><summary id="checks-details-title">其他检查项目</summary><div class="check-scroll check-scroll-full"><table class="check-table check-table-full"><colgroup><col class="check-col-group"><col class="check-col-full-label"><col class="check-col-result"><col><col class="check-col-time"></colgroup><thead><tr><th>类别</th><th>检查项目</th><th>结果</th><th class="check-basis-cell">具体依据</th><th>检查时间</th></tr></thead><tbody id="checks-all"></tbody></table></div></details></article>
+<article id="candidate-section"><h2>自动选择的候选 <span class="candidate-help" title="候选展示不代表已通过全部门槛或已下单；报价以该次评估为准。" aria-label="候选展示说明" tabindex="0">ⓘ</span></h2><div id="candidate"></div></article>
+<article id="positions-section"><h2>实际持仓</h2><div id="quota" class="quota-panel"></div><p id="exit-summary"></p><div id="positions"></div></article>
+<article><h2>订单进度与下单依据</h2><p class="order-note">按美东交易日分组，成交时刻为香港/北京（UTC+8）。金额为美元，组合净价按每股展示；净收付款不等于策略盈亏。</p><div id="order-progress" style="overflow-x:auto"></div></article>
+<article id="audit-records"><h2>审计记录</h2><section class="audit-section"><details><summary>操作记录</summary><div id="events"></div></details></section><section class="audit-section"><details id="history-toggle"><summary aria-controls="history-panel">异常历史</summary></details><div id="history-panel" class="management-panel" hidden><p class="calendar-note">记录异常发生与解除；解除不代表恢复新增授权或已完成平仓。</p><div id="alert-history"></div></div></section></article>
+<small>策略本金与券商净资产分别显示。保证金金额上限按策略累计净值计算；券商净资产与SMA独立显示。止损按策略池累计盈亏（含已实现）及累计开仓净信用分母计算；阈值见当前规则。限价未成交、断线或部分成交会要求接管；不会假装已止损。</small>
+</main><script>
+const $=id=>document.getElementById(id);
+const HEALTH={"service_stale_seconds": 30, "fetch_timeout_seconds": 10};
+const esc=v=>String(v??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=v=>v==null?'—':new Intl.NumberFormat('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}).format(v);
+const displayNames={BATCH_TIME_INITIALIZED:'旧批次计时初始化',basis:'计时依据',OPENING_SELECTION:'开仓数量检查',groups:'候选组数',outcome:'检查结论',WAIT_DATA:'等待完整数据，结束本轮数量尝试',REJECTED:'候选未通过',reasons:'具体依据',at:'检查时间',HALTED:'异常暂停，需核对',AUTHORIZED:'已授权新增',PAUSE_NEW:'暂停新增',SUBMITTED:'已提交模拟订单',CLOSED:'策略池已关闭',FEE_UPDATED:'实际费用已更新',GATEWAY_RECONNECT_REQUESTED:'已请求重连Gateway',GATEWAY_RECONNECTED:'Gateway重连核对完成',PARTIAL_OPEN_RECONCILED:'部分成交已核对登记',planned_groups:'原计划组数',filled_groups:'实际成交组数',cancelled_groups:'已撤销组数',max_groups:'本次授权组数上限',OPEN:'开仓',CLOSE:'平仓',OBSERVE:'观察模式',ARMED:'已授权',HOLD:'继续持有',TAKE_PROFIT:'止盈',STOP_LOSS:'止损',TIME_EXIT:'到期前退出',WAIT_QUOTES:'等待有效行情',WAIT_PNL:'等待盈亏数据',capital:'策略净值',until:'授权截止',mode:'运行状态',authorization_restored:'是否恢复旧授权',kind:'订单方向',order_id:'券商订单编号',limit:'委托限价',pool:'策略池',pnl:'累计盈亏',open_fee:'开仓费用',source:'来源',manual:'手动操作'};
+function readable(value){
+if(value==null)return '未提供';
+if(typeof value==='boolean')return value?'是':'否';
+if(Array.isArray(value))return value.length?value.map(readable).join('；'):'无';
+if(typeof value==='object')return Object.entries(value).map(([k,v])=>(displayNames[k]||k)+'：'+(['until','at'].includes(k)&&Number.isFinite(v)?new Date(v*1000).toLocaleString():['capital','pnl','open_fee','limit'].includes(k)?money(v):readable(v))).join('；')||'无补充信息';
+return displayNames[value]||String(value);
+}
+let pendingAction=null, latestStatus=null;
+let noticeTimer=null,noticeSerial=0,noticeKind='',noticeSource='',dismissedNotice='';
+let manualScan=null,connectionWatch=null;
+function clearNotice(){
+ noticeSerial++;if(noticeTimer!==null)clearTimeout(noticeTimer);noticeTimer=null;
+ $('notice').textContent='';$('notice').className='';$('notice-dismiss').hidden=true;
+ noticeKind='';noticeSource='';
+}
+function showNotice(text,kind='progress',source='action'){
+ const message=String(text||'');
+ if(kind==='error'&&message===dismissedNotice)return;
+ if($('notice').textContent===message&&noticeKind===kind&&noticeSource===source)return;
+ clearNotice();$('notice').textContent=message;$('notice').className='notice-'+kind;
+ noticeKind=kind;noticeSource=source;$('notice-dismiss').hidden=kind!=='error';
+ if(kind==='success'){
+  const serial=noticeSerial;
+  noticeTimer=setTimeout(()=>{if(serial===noticeSerial)clearNotice();},5000);
+ }
+}
+function updateFeedback(s){
+ if(restartWatch){
+  const message=$('restart-status').textContent;
+  if(message)showNotice(message,Date.now()>restartWatch.deadline?'error':'progress','restart');
+  return;
+ }
+ const connection=s.connection||{};
+ if(noticeKind==='error'&&noticeSource==='connection'&&connection.status==='CONNECTED')clearNotice();
+ if(connectionWatch?.accepted){
+  if(connection.requested||['CONNECTING','RECONNECTING'].includes(connection.status)){
+   showNotice('正在重新连接并核对账户、持仓和订单。','progress','connection');return;
+  }
+  if((connection.attempts||0)>connectionWatch.baseline){
+   connectionWatch=null;
+   showNotice(connection.status==='CONNECTED'?'连接与核对已完成；新增授权未恢复。':'连接核对未通过，请查看当前状态和检查详情。',connection.status==='CONNECTED'?'success':'error','connection');return;
+  }
+ }
+ const progress=s.scan_progress||{};
+ if(noticeKind==='error'&&noticeSource==='scan'&&progress.status==='COMPLETED')clearNotice();
+ if(manualScan?.accepted&&((manualScan.requested_at&&progress.requested_at===manualScan.requested_at)||(!manualScan.requested_at&&(progress.sequence||0)>manualScan.baseline))){
+  if(['QUEUED','RUNNING'].includes(progress.status)){
+   showNotice(progress.status==='QUEUED'?'重扫已排队，等待前置检查完成。':'正在重扫，完成后自动更新结果。','progress','scan');
+  }else if(['COMPLETED','FAILED'].includes(progress.status)){
+   manualScan=null;
+   showNotice(progress.status==='COMPLETED'?'重扫已完成，检查结果已更新。':'重扫失败：'+(progress.error||'请查看检查详情'),progress.status==='COMPLETED'?'success':'error','scan');
+  }
+ }
+}
+
+let restartWatch=null;
+let pageFailed=false;
+const stamp=v=>v?new Date(v*1000).toLocaleString():'尚无有效记录';
+function renderHealth(s){
+const restartWaiting=!!restartWatch&&Date.now()<=restartWatch.deadline;
+const m=s.management||{}, stale=(pageFailed||!s.at||false /* 固定合成快照，过期由演示场景指定 */);
+const checking=['MONITORING','WAIT_DATA','STALE','OUTSIDE_HOURS'].includes(m.status);
+const label=restartWaiting?'工作台重启中，自动管理暂时中断':stale?'页面无法确认自动管理状态':checking?'持仓管理服务运行中':m.label||'等待核对管理状态';
+$('management-label').textContent=label;
+$('management-detail').textContent=restartWaiting?'正在等待新实例重新连接并核对，页面会自动恢复；新增授权不会继承。':stale?'服务状态未及时更新，请检查后台与Gateway；旧页面结果不能证明仓位仍在管理。':checking?'Gateway已连接，服务持续检查已有仓位；本轮能否自动退出取决于下方数据状态。':m.detail||'尚未取得管理检查结果';
+const dataLabels={MONITORING:'本轮数据有效',WAIT_DATA:'等待有效数据，暂不可自动退出',STALE:'近期有效检查不足，暂不可确认自动退出',OUTSIDE_HOURS:'退出时段之外',EXIT_PENDING:'平仓订单处理中，尚未确认退出',ORDER_PENDING:'开仓订单处理中',EMPTY:'已核对，无待管理仓位'};
+$('management-data-status').textContent=restartWaiting?'等待重启核对':stale?'本轮状态无法确认':dataLabels[m.status]||m.label||'等待本轮数据';
+$('management-data-status').className=stale||m.status==='STOPPED'?'data-stop':m.status==='MONITORING'?'data-valid':['WAIT_DATA','STALE'].includes(m.status)?'data-wait':'data-neutral';
+$('management-data-detail').textContent=stale?'请核对本机服务与连接。':m.detail||'尚未取得管理检查结果';
+// 相同结论与原因只显示一次；每轮重算并清空隐藏文案，恢复状态时重新显示。
+const sameText=(a,b)=>String(a||'').trim().replace(/\s+/g,' ')===String(b||'').trim().replace(/\s+/g,' ');
+const badge=$('management-data-status'), dataDetail=$('management-data-detail');
+badge.hidden=sameText(badge.textContent,$('management-label').textContent);
+dataDetail.hidden=sameText(dataDetail.textContent,$('management-detail').textContent);
+if(badge.hidden)badge.textContent='';
+if(dataDetail.hidden)dataDetail.textContent='';
+$('management-data').hidden=badge.hidden&&dataDetail.hidden;
+
+if($('management-banner').style)$('management-banner').style.borderColor=stale||['STOPPED','WAIT_CONNECTION'].includes(m.status)?'#a52626':restartWaiting?'#b08025':'#203d5b';
+const meta=(label,value,title='')=>'<span'+(title?' title="'+esc(title)+'"':'')+'>'+esc(label)+' <b>'+esc(value)+'</b></span>';
+const brief=v=>v?new Date(v*1000).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}):'暂无记录';
+$('management-time').innerHTML=meta('有效管理检查',m.last_check_at?brief(m.last_check_at):m.pool_count?'尚未完成':'未开始管理','所有策略池最近一次完成有效管理检查的时间；不代表仅检查券商连接或持仓。')+meta('管理尝试',m.last_attempt_at?brief(m.last_attempt_at):'未开始管理','最近一次开始执行策略池管理检查的时间，即使数据不足未完成也会记录。')+meta('持仓快照',brief(m.snapshot_at))+meta('时区','香港 / 北京');
+const v=s.versions||{};$('versions').innerHTML=meta('服务',v.service||'未知')+meta('规则',v.rules||s.rules?.version||'未知')+meta('金融登记',v.finance_document||'未知')+meta('启动',brief(v.started_at));
+if(stale)$('arm').disabled=true;
+const alerts=s.alerts||{},active=alerts.active||[],history=alerts.history||[];
+// 管理与数据状态已在卡片说明；其他独立异常仍显示，历史保留全部记录。
+const extraAlerts=active.filter(x=>!(x.key==='management_unavailable'&&x.title===m.label&&x.detail===m.detail));
+$('alerts').innerHTML=extraAlerts.map(x=>'<p><strong>'+esc(x.title)+'</strong> · '+esc(x.detail)+'（首次发现 '+esc(stamp(x.first_seen))+'）</p>').join('');
+$('alert-history').innerHTML=history.length?'<table><tr><th>时间</th><th>事件</th><th>说明</th></tr>'+history.map(e=>'<tr><td>'+esc(stamp(e.at))+'</td><td>'+esc(e.kind==='ALERT_RECOVERED'?'原异常已解除':'异常发生')+'</td><td>'+esc(e.payload.title)+' · '+esc(e.payload.detail)+'</td></tr>').join('')+'</table>':'<p>暂无异常变化记录。</p>';
+}
+const pct=v=>Number.isFinite(v)?v.toFixed(2)+'%':'—';
+const price=v=>Number.isFinite(v)?v.toFixed(2):'—';
+const signedQty=v=>Number.isFinite(v)?(v>0?'+':'')+String(v):'—';
+const amount=v=>Number.isFinite(v)?v.toFixed(2):'—';
+// 颜色跟随两位小数的显示值，避免浮点残差让0.00被染色。
+const signedClass=v=>{const shown=Number.isFinite(v)?Number(money(v).replaceAll(',','')):0;return shown>0?'pnl-gain':shown<0?'pnl-loss':'';};
+const pnlAmount=v=>'<span class="'+signedClass(v)+'">'+money(v)+'</span>';
+const positionScrollOffsets=new Map();
+function expiryGroupCount(g){
+// 仅加总已识别组合的现有组数；不将单腿或待确认结构臆算成组合。
+const combinations=g.combinations||[];
+return combinations.length&&combinations.every(combo=>Number.isInteger(combo.groups)&&combo.groups>0&&!['待确认组合','单腿持仓','单项持仓'].includes(combo.name))?
+ combinations.reduce((total,combo)=>total+combo.groups,0)+'组':'合计组数待核对';
+}
+function positionMetrics(g){
+// 复用后台已核验的日期汇总和组合指标，仅格式化显示。
+return '<div class="position-metrics">'+[['未实现盈亏',money(g.unrealized_pnl),g.unrealized_pnl],['盈亏率',pct(g.unrealized_pct),g.unrealized_pct],['组合市值',money(g.market_value),null],['当日盈亏',money(g.daily_pnl),g.daily_pnl]].map(([label,value,raw])=>'<div'+(label==='盈亏率'?' title="未实现盈亏 ÷ 净成本绝对值；不是策略止损口径"':'')+'><small>'+esc(label)+'</small><span class="'+signedClass(raw)+'">'+esc(value)+'</span></div>').join('')+'</div>';
+}
+function positionLegTable(g){
+return '<div class="position-scroll" id="position-scroll-'+esc(g.id)+'"><table class="position-table"><colgroup><col style="width:16%"><col style="width:8%"><col style="width:10%"><col style="width:12%"><col style="width:14%"><col style="width:12%"><col style="width:14%"><col style="width:14%"></colgroup><thead><tr><th>合约</th><th class="quantity-cell">数量</th><th>平均价</th><th title="券商持仓市值 ÷ 带正负号的持仓数量 ÷ 合约乘数；不是最新成交价">市值折算价</th><th>成本基础</th><th>市值</th><th>未实现盈亏</th><th>当日盈亏</th></tr></thead><tbody>'+g.legs.map(l=>'<tr><td>'+esc([l.symbol,l.right,price(l.strike)].filter(v=>v!=null).join(' '))+'</td><td class="quantity-cell">'+esc(signedQty(l.quantity))+'</td><td>'+price(l.average_price)+'</td><td>'+price(l.mark_price)+'</td><td>'+amount(l.cost_basis)+'</td><td>'+money(l.market_value)+'</td><td class="'+signedClass(l.unrealized_pnl)+'">'+money(l.unrealized_pnl)+'</td><td class="'+signedClass(l.daily_pnl)+'">'+money(l.daily_pnl)+'</td></tr>').join('')+'</tbody></table></div>';
+}
+function renderPositionGroups(s){
+// 轮询替换组合DOM前保存各表横向位置，关闭的表保留上次可见位置。
+if(typeof document.querySelectorAll==='function')for(const table of document.querySelectorAll('#positions .position-scroll')){
+if(table.clientWidth>0)positionScrollOffsets.set(table.id,table.scrollLeft);
+}
+const opened=typeof document.querySelectorAll==='function'?Array.from(document.querySelectorAll('#positions details[open]')).map(e=>e.id):[];
+const groups=s.position_groups;
+if(!Array.isArray(groups))return false;
+if(!groups.length){positionScrollOffsets.clear();return false;}
+$('positions').innerHTML=groups.map(g=>{
+if(Array.isArray(g.combinations))return '<section class="position-card"><h3 class="position-title"><span>'+esc(g.symbol+' · '+(g.expiry||'无到期日'))+'</span><span class="position-note">'+esc(expiryGroupCount(g))+'</span></h3>'+positionMetrics(g)+g.combinations.map(combo=>{
+ const strikes=combo.legs.map(leg=>(leg.quantity<0?'卖':'买')+leg.right+price(leg.strike)).join(' / ');
+ return '<div class="position-combination"><h4 class="position-combo-title"><span>'+esc(combo.name)+'</span><span>'+esc(strikes)+'</span><span>'+esc(combo.groups==null?'数量待核对':combo.groups+(combo.legs.length===1?'张':'组'))+'</span></h4>'+positionMetrics(combo)+'<details id="position-'+esc(combo.id)+'"><summary>明细腿（'+combo.legs.length+'条）</summary>'+positionLegTable(combo)+'</details></div>';
+}).join('')+'</section>';
+
+const metric=(label,value,raw)=>'<div'+(label==='盈亏率'?' title="未实现盈亏 ÷ 净成本绝对值；不是策略止损口径"':'')+'><small>'+esc(label)+'</small><span class="'+signedClass(raw)+'">'+esc(value)+'</span></div>';
+return '<section class="position-card"><h3 class="position-title"><span class="position-name">'+esc(g.symbol+' '+g.name)+'</span><span>'+esc(g.by_expiry?g.legs.length+'条腿':g.groups==null?'数量待核对':g.groups+(g.name==='单腿持仓'||g.name==='单项持仓'?'张':'组'))+'</span><span class="position-note">'+esc(g.expiry||'无到期日')+'</span></h3><div class="position-metrics">'+
+metric('未实现盈亏',money(g.unrealized_pnl),g.unrealized_pnl)+metric('盈亏率',pct(g.unrealized_pct),g.unrealized_pct)+metric('组合市值',money(g.market_value))+metric('当日盈亏',money(g.daily_pnl),g.daily_pnl)+
+ '</div><p class="position-status">'+esc(g.exit_summary||'')+' '+esc(g.pool_ids.length?'已关联策略池':'未关联策略池')+' · 最近估值 '+esc(stamp(g.valuation_at))+' <span class="stale">'+(g.valuation_stale?'已过期':'')+'</span></p><details id="position-'+esc(g.id)+'"><summary>各腿明细（'+g.legs.length+'条）</summary>'+positionLegTable(g)+'<p class="position-note">未提供：成交价、bid / ask、涨跌幅、日内高低、Delta / Gamma。</p></details></section>';
+}).join('');
+for(const id of opened){const node=document.getElementById(id);if(node)node.open=true;}
+const liveIds=new Set(groups.flatMap(g=>(g.combinations||[g]).map(combo=>'position-scroll-'+combo.id)));
+for(const [id,left] of positionScrollOffsets){if(!liveIds.has(id)){positionScrollOffsets.delete(id);continue;}const table=document.getElementById(id);if(table)table.scrollLeft=left;}
+return true;
+}
+const orderTime=value=>Number.isFinite(value)?new Date(value*1000).toLocaleString('zh-CN',{timeZone:'Asia/Hong_Kong',hour12:false}):'时间待核对';
+function orderAction(o){
+const signal=o.decision?.exit?.signal;
+return o.kind==='CLOSE'?({TAKE_PROFIT:'止盈平仓',STOP_LOSS:'止损平仓',TIME_EXIT:'到期退出'}[signal]||'平仓'):'开仓';
+}
+function orderReason(o){
+// 只读取当时的记录，不以当前行情或规则倒填历史原因。
+const d=o.decision;
+if(!d)return '历史订单未保存下单原因，不能用当前数据倒填。';
+if(o.kind==='CLOSE'){
+ const signal=d.exit?.signal;
+ if(signal==='TAKE_PROFIT')return Number.isFinite(d.rules?.take_profit)?'达到'+pct(d.rules.take_profit*100)+'止盈条件，执行平仓。':'触发止盈条件，执行平仓。';
+ if(signal==='STOP_LOSS')return '触发已确认的止损条件，执行平仓。';
+ if(signal==='TIME_EXIT')return '触发临近到期退出条件，执行平仓。';
+ return '已记录平仓委托，具体退出原因未记录。';
+}
+return d.assessment?.eligible&&d.margin_admission?.ready?'当时开仓条件核验通过，按批准规则提交组合。':d.assessment?.eligible?'当时候选评估通过，完整准入依据未记录。':'已记录开仓委托，完整准入依据未记录。';
+}
+function orderTradesHtml(o){
+const t=o.trade_details||{},legs=o.legs||[],cash=t.net_cash,originalColumn=o.kind==='CLOSE';
+const netLabel=(t.final?'最终':'已成交部分')+(Number.isFinite(cash)?cash>=0?'净收款':'净付款':'净额');
+const unit=t.combination_price;
+const settlement=o.settlement;
+const signed=value=>Number.isFinite(value)?(value>=0?'+':'')+money(value):'待核对';
+const exact=value=>Number.isFinite(value)?money(value):'待核对';
+const profitFormula=Number.isFinite(settlement?.opening_gross_cash)&&Number.isFinite(settlement?.total_roundtrip_fees)&&Number.isFinite(t.gross_cash)&&t.gross_cash<=0?'开仓收入 '+exact(settlement.opening_gross_cash)+' − 平仓支出 '+exact(Math.abs(t.gross_cash))+' − 开平仓费用 '+exact(settlement.total_roundtrip_fees)+' = '+exact(settlement.realized_pnl):'开仓收入、平仓支出及完整费用待核对';
+const rateFormula=Number.isFinite(settlement?.basis)&&settlement.basis>0?'盈利 '+exact(settlement.realized_pnl)+' ÷ 开仓净权利金 '+exact(settlement.basis)+' × 100% = '+pct(settlement.realized_pct):'收益率分母待核对';
+const result=o.kind==='CLOSE'?(settlement&&t.final?'<div class="order-settlement"><div><span>实际'+(settlement.realized_pnl>=0?'盈利':'亏损')+'</span><strong class="'+signedClass(settlement.realized_pnl)+'">'+esc(signed(settlement.realized_pnl))+'</strong><small>'+esc(profitFormula)+'</small></div><div><span>收益率</span><strong class="'+signedClass(settlement.realized_pct)+'">'+esc((settlement.realized_pct>=0?'+':'')+pct(settlement.realized_pct))+'</strong><small>'+esc(rateFormula)+'</small></div></div>':'<p class="order-wait">平仓盈亏待核对</p>'):'';
+let html='<div class="order-body">'+result;
+if(!t.final){
+ let progress=o.label||'等待订单核对';
+ if(Number.isFinite(t.working_remaining)&&t.working_remaining>0)progress+='；仍有'+t.working_remaining+'组等待成交';
+ else if(o.filled>0&&!o.fees_ready)progress+='；等待费用回报或登记';
+ if(o.execution?.modify_pending)progress+='；调价待券商确认';
+ html+='<p class="order-wait">'+esc(progress)+'。</p>';
+}
+html+='<table class="order-leg-table">'+(originalColumn?'<colgroup><col style="width:40%"><col style="width:16%"><col style="width:22%"><col style="width:22%"></colgroup>':'<colgroup><col style="width:50%"><col style="width:22%"><col style="width:28%"></colgroup>')+'<thead><tr><th>合约及到期</th><th>已成数量</th>'+(originalColumn?'<th>原开仓均价</th>':'')+'<th>成交均价</th></tr></thead><tbody>'+legs.map(l=>{
+ const contract=[l.symbol,l.expiry,l.right&&l.strike!=null?l.right+price(l.strike):null].filter(Boolean).join(' · ')||'合约待核对';
+ return '<tr><td>'+esc(contract)+'</td><td>'+esc(Number.isFinite(l.filled)?(l.filled>0?'+':'')+l.filled:'待核对')+'</td>'+(originalColumn?'<td>'+esc(exact(settlement?.opening_average_prices?.[String(l.conid)]))+'</td>':'')+'<td>'+price(l.average_price)+'</td></tr>';
+}).join('')+'</tbody></table><div class="order-cashflow">'+[
+ ['组合成交净价',Number.isFinite(unit)?(unit>=0?'+':'-')+price(Math.abs(unit)):'待回报'],
+ ['成交金额',Number.isFinite(t.gross_cash)?signed(t.gross_cash):'待回报'],
+ ['扣除费用',Number.isFinite(t.total_fees)?signed(-t.total_fees):'待回报'],
+ [netLabel,Number.isFinite(cash)?signed(cash):'待核对']
+].map(([label,value],index)=>'<div'+(index===3?' class="order-net-total"':'')+'><span>'+esc(label)+'</span><strong>'+esc(value)+'</strong></div>').join('')+'</div><h3>下单原因</h3><p class="order-reason">'+esc(orderReason(o))+'</p></div>';
+return html;
+}
+function orderCombinationLabel(o){
+// 按行权价升序展示原始结构；平仓保留原策略名称，不由反向成交腿推断新策略。
+const legs=o.legs||[],rights=[...new Set(legs.map(l=>l.right).filter(Boolean))];
+const strikes=right=>[...new Set(legs.filter(l=>l.right===right&&Number.isFinite(l.strike)).map(l=>l.strike))].sort((a,b)=>a-b).map(String).join('/');
+const structure=rights.length===1?strikes(rights[0]):['P','C'].filter(r=>rights.includes(r)).map(r=>r+' '+strikes(r)).join(' · ');
+return (o.combination?.name||'组合待核对').replace(/\s*（[^）]*）/g,'')+(structure?' '+structure:'');
+}
+function orderTradingDay(value){
+// 用真实成交时刻换算美东日期，自动处理夏令时；未成交不使用提交日期冒充交易日。
+if(!Number.isFinite(value))return null;
+const parts=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(value*1000));
+const date=Object.fromEntries(parts.map(part=>[part.type,part.value]));
+return date.year+'-'+date.month+'-'+date.day;
+}
+function renderOrders(orders){
+const opened=typeof document.querySelectorAll==='function'?Array.from(document.querySelectorAll('#order-progress details[open]')).map(node=>node.id):[];
+const grouped=new Map();
+for(const o of orders||[]){const day=orderTradingDay(o.trade_details?.last_fill_at)||'未确认成交';if(!grouped.has(day))grouped.set(day,[]);grouped.get(day).push(o);}
+const header='<div class="order-list-head" aria-hidden="true"><span></span><span>类型</span><span>标的 / 到期 / 组合</span><span>已成 / 计划</span><span>状态</span><span>最后成交（香港/北京）</span><span>订单</span></div>';
+$('order-progress').innerHTML=orders?.length?[...grouped].sort(([a],[b])=>a==='未确认成交'?1:b==='未确认成交'?-1:b.localeCompare(a)).map(([day,items])=>'<h4 class="order-trading-day">'+esc(day==='未确认成交'?day:'美东交易日 '+day)+'</h4>'+header+items.map(o=>{
+ const t=o.trade_details||{},legs=o.legs||[];
+ const symbols=o.combination?.symbols||[...new Set(legs.map(l=>l.symbol).filter(Boolean))];
+ const expiries=[...new Set(legs.map(l=>l.expiry).filter(Boolean))];
+ const status=t.final?(o.filled===o.planned?'全部成交':'部分成交已登记'):(o.label||'等待核对');
+ const time=Number.isFinite(t.last_fill_at)?orderTime(t.last_fill_at):'提交 '+orderTime(o.created);
+ return '<details class="order-card" id="order-'+esc(o.intent)+'"><summary><span class="order-action">'+esc(orderAction(o))+'</span><span class="order-contract"><span>'+esc(symbols.join('/')||'合约待核对')+' '+esc(expiries.join('/')||'到期待核对')+'</span><small>'+esc(orderCombinationLabel(o))+'</small></span><span class="order-quantity">'+esc(o.filled??'—')+'/'+esc(o.planned??'—')+'组</span><span class="order-status '+(t.final?'pnl-gain':'')+'">'+esc(status)+'</span><span class="order-summary-time">'+esc(time)+'</span><span class="order-number">订单 '+esc(o.order_id??'待确认')+'</span></summary>'+orderTradesHtml(o)+'</details>';
+}).join('')).join(''):'<p>暂无本地订单记录。</p>';
+for(const id of opened){const element=document.getElementById(id);if(element)element.open=true;}
+}
+function controls(s){
+latestStatus=s;
+for(const id of ['arm','pause','reconnect','recover','restart']){
+const button=$(id);if(button){button.disabled=true;button.title='公开演示：该操作不可执行';}}
+$('refresh').disabled=false;
+$('control-status').textContent='只读演示 · 新增开仓未授权';
+}
+// 仅渲染已核验的美东日期；未知来源与覆盖缺口单独显示，不生成交易条件。
+let calendarMonth=null, calendarData={};
+function renderCalendarSyncStatus(calendar){
+// 来源与结果常驻逐行显示；同来源、同错误合并，不重复列出查询任务或月份。
+const tasks=[calendar.sync,calendar.observation?.preview_sync];
+const groups=new Map();
+for(const sync of tasks.filter(item=>item?.status==='FAILED')){
+ let event='日历';
+ for(const part of String(sync.error||'未提供失败原因').split('；')){
+  const match=part.match(/^(CPI|FOMC)(?::(\d{4}(?:-\d{2})?))?:\s*(.*)$/i);
+  if(match)event=match[1].toUpperCase();
+  const raw=(match?match[3]:part).trim(),institution=raw.match(/^(BLS|FRED|美联储)[：:]\s*(.*)$/i);
+  const provider=institution?institution[1].toUpperCase():event==='FOMC'?'美联储':'来源未标明';
+  const message=institution?institution[2]:raw;
+  const reason=/^HTTP Error 403: Forbidden$/i.test(message)?'来源网站拒绝访问（HTTP 403）':/timed out|timeout/i.test(message)?'读取超时':message;
+  const key=JSON.stringify([event,provider,reason]);
+  groups.set(key,{event,provider,reason,failed:true,at:Math.max(groups.get(key)?.at||0,Number(sync.attempted_at)||0)});
+ }
+}
+const urls=calendar.sources||[];
+for(const [event,key,provider] of [['FOMC','fomc','美联储'],['CPI','cpi',urls.some(url=>String(url).startsWith('https://fred.stlouisfed.org/'))?'FRED':'BLS']]){
+ const at=Number(calendar.source_times?.[key]);
+ const sourceKnown=event==='FOMC'?urls.some(url=>String(url).startsWith('https://www.federalreserve.gov/')):urls.some(url=>/^https:\/\/(www\.bls\.gov|fred\.stlouisfed\.org)\//.test(String(url)));
+ if(sourceKnown&&Number.isFinite(at)&&at>0&&![...groups.values()].some(row=>row.event===event))groups.set(event,{event,provider,reason:'已更新',at,failed:false});
+}
+const timeText=value=>value?new Date(value*1000).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}):'暂无记录';
+const rows=[...groups.values()].sort((a,b)=>(a.event==='FOMC'?0:1)-(b.event==='FOMC'?0:1)).map(row=>'<div class="calendar-sync-row"><strong class="calendar-event-name '+(row.event==='FOMC'?'fomc':row.event==='CPI'?'cpi':'')+'">'+esc(row.event+' · '+(row.provider==='BLS'?'BLS（美国劳工统计局）':row.provider==='FRED'?'FRED（圣路易斯联储，备用）':row.provider))+'</strong><span>'+esc(row.reason)+'</span><time class="calendar-sync-time">'+esc((row.failed?'最近尝试 ':'更新时间 ')+timeText(row.at))+'</time></div>').join('');
+const complete=tasks.every(item=>item?.status==='SUCCEEDED');
+return '<div class="calendar-sync-list">'+(rows||'<p>'+esc(complete?'日历更新完成':'日历更新待完成')+'</p>')+'</div>';
+}
+function moveCalendarMonth(step){
+const reference=(calendarData.observation?.today||new Date().toISOString()).slice(0,7);
+const [year,month]=(calendarMonth||reference).split('-').map(Number);
+const next=new Date(Date.UTC(year,month-1+step,1));
+calendarMonth=step===0?reference:next.toISOString().slice(0,7);
+$('calendar-view').innerHTML=renderCalendar(calendarData);
+}
+function renderCalendar(calendar={}){
+calendarData=calendar;
+const observation=calendar.observation||{},today=observation.today||calendar.verified_date||'待核验';
+const names={FOMC:'FOMC决议发布',CPI:'CPI发布'},events=observation.today_events||[],upcoming=observation.upcoming||[];
+const reference=/^\d{4}-\d{2}-\d{2}$/.test(today)?today:new Date().toISOString().slice(0,10);
+const monthKey=calendarMonth||reference.slice(0,7),[year,month]=monthKey.split('-').map(Number);
+const days=new Date(Date.UTC(year,month,0)).getUTCDate(),offset=(new Date(Date.UTC(year,month-1,1)).getUTCDay()+6)%7;
+const all=observation.calendar_events||[...events.map(item=>({...item,date:item.date||today})),...upcoming];
+const monthEvents=all.filter(item=>item.date?.startsWith(monthKey+'-'));
+let cells=Array.from({length:offset},()=>'<div class="calendar-day empty" aria-hidden="true"></div>');
+for(let day=1;day<=days;day++){
+ const date=monthKey+'-'+String(day).padStart(2,'0'),items=monthEvents.filter(item=>item.date===date);
+ cells.push('<div class="calendar-day '+(date===today?'today ':'')+(items.length?'event':'')+'" data-calendar-date="'+date+'"'+(date===today?' aria-current="date"':'')+'><span class="calendar-date">'+day+'</span>'+items.map(item=>'<a class="calendar-marker '+(item.kind==='CPI'?'cpi':'fomc')+'" '+(String(item.url||'').startsWith('https://')?'href="'+esc(item.url)+'" target="_blank" rel="noopener noreferrer"':'')+' title="'+esc(date+' '+(names[item.kind]||item.kind))+'">'+esc(item.kind)+'</a>').join('')+'</div>');
+}
+while(cells.length%7)cells.push('<div class="calendar-day empty" aria-hidden="true"></div>');
+const current=events.length?'今日事件：'+events.map(item=>names[item.kind]||item.kind).join('、'):calendar.ready?'今日无已核验的FOMC/CPI发布':'今日日历覆盖待更新，不能确认是否有事件';
+return '<div class="calendar-today '+(events.length?'event':'')+'"><small>美东 '+esc(today)+'</small><div>'+esc(current)+'</div></div><div class="calendar-toolbar"><strong>'+year+'年 '+month+'月</strong><div class="calendar-nav"><button type="button" data-calendar-step="-1" aria-label="上个月">‹</button><button type="button" data-calendar-step="0" aria-label="返回本月">本月</button><button type="button" data-calendar-step="1" aria-label="下个月">›</button></div></div><div class="calendar-grid" role="group" aria-label="'+year+'年'+month+'月事件日历">'+['一','二','三','四','五','六','日'].map(day=>'<div class="calendar-weekday">'+day+'</div>').join('')+cells.join('')+'</div><section id="calendar-sources" class="calendar-sources"><h3>更新状态与来源</h3>'+renderCalendarSyncStatus(calendar)+'</section>';
+}
+// 仅格式化现有候选数据，不计算或改变交易评估结果。
+function renderCandidate(candidate,scan={}){
+if(!candidate)return '<div class="candidate-empty"><strong>等待合适的组合</strong><p>前置条件通过后将自动筛选；检查进度和原因见上方检查详情。</p></div>';
+const legs=candidate.legs||[],metrics=candidate.assessment?.metrics||{};
+const first=legs[0]||{};
+const tiles=[['开仓净信用',metrics.credit,'预计收取权利金，未扣费'],['扣费后净信用',metrics.stop_basis_estimate,'已扣预计开仓费用'],['预计往返费用',metrics.roundtrip_fee_estimate,'开仓与平仓费用合计'],['调整后净池理论风险',metrics.projected_pool_risk,'以本次评估结果为准']];
+const meta=[first.expiry?'到期 '+first.expiry:null,Number.isFinite(metrics.dte)?'剩余 '+metrics.dte+' 天':null,Number.isFinite(metrics.groups)?'本批计划 '+metrics.groups+' 组':null,Number.isFinite(metrics.otm)?'短腿虚值率 '+pct(metrics.otm*100):null,Number.isFinite(scan.ivp)?'最近复核 IVP '+pct(scan.ivp):null].filter(Boolean);
+return '<header class="candidate-heading"><h3>'+esc(first.symbol||'期权')+' · Bull Put</h3><div class="candidate-meta">'+meta.map(v=>'<span>'+esc(v)+'</span>').join('')+'</div></header><div class="candidate-metrics">'+tiles.map(([label,value,note],i)=>'<div class="candidate-metric '+(i===0?'candidate-primary':'')+'"><small>'+esc(label)+' · USD</small><strong>'+money(value)+'</strong><span>'+esc(note)+'</span></div>').join('')+'</div><div class="candidate-scroll"><table class="candidate-table"><thead><tr><th>方向</th><th>合约</th><th>数量</th><th>买价 / 卖价 · USD</th><th>Delta · 仅观察</th></tr></thead><tbody>'+legs.map(leg=>{const quote=leg.quote||{};return '<tr><td><span class="candidate-side '+(leg.quantity>0?'buy':'')+'">'+(leg.quantity>0?'买入 · 保护腿':'卖出 · 短腿')+'</span></td><td>'+esc(leg.symbol+' '+leg.right+' '+price(leg.strike))+'</td><td>'+esc(signedQty(leg.quantity))+'</td><td>'+price(quote.bid)+' / '+price(quote.ask)+'</td><td>'+price(quote.delta)+'</td></tr>';}).join('')+'</tbody></table></div><p class="candidate-footnote">候选评估于 '+esc((candidate.at||scan.at)?new Date((candidate.at||scan.at)*1000).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}):'待核对')+'</p>';
+}
+const checkDetailText=text=>String(text||'').replace(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})/g,value=>{
+const date=new Date(value);return Number.isNaN(date.getTime())?value:date.toLocaleString('zh-CN',{timeZone:'Asia/Hong_Kong',hour12:false})+'（香港/北京）';
+});
+function conditionTableRows(s){
+// 所有未映射原因也进入表格，不再保留旧列表或按关键词静默丢弃异常。
+const decorate=row=>row.id==='engine'&&row.status==='failed'&&s.management?.status==='STOPPED'&&s.management.detail?
+ {...row,detail:[row.detail,s.management.detail].filter(Boolean).join('；'),source_reasons:[...(row.source_reasons||[]),s.management.detail]}:{...row};
+const checks=(s.checklist||[]).map(decorate),primary=(s.check_summary||checks.filter(row=>row.status==='failed'||row.missing)).map(decorate);
+const active=checks.concat(primary).filter(row=>row.status==='failed'||row.status==='pending'||row.missing);
+const aliases={'尚未达到两批最小间隔，等待下一批':'batch_interval'};
+const reasons=Array.isArray(s.additional_reasons)?s.additional_reasons:(s.reasons||[]);
+for(const reason of new Set(reasons)){
+const represented=active.some(row=>row.detail?.includes(reason)||row.source_reasons?.includes(reason)||
+ (aliases[reason]&&(row.id===aliases[reason]||row.issue_ids?.includes(aliases[reason]))));
+if(represented)continue;
+const id='runtime_'+Array.from(String(reason)).map(c=>c.codePointAt(0).toString(16)).join('_');
+const row={id,group:'其他运行条件',label:'其他运行条件',status:'failed',detail:String(reason),at:s.at,source_reasons:[reason]};
+checks.push(row);primary.push(row);
+}
+return {checks,primary};
+}
+function importantCheckRows(checks,primary){
+// 仅组织显示，不改变后台条件；关联技术异常合并为可操作的业务结果。
+const index=new Map(checks.map(row=>[row.id,row]));
+const groups={gateway:['gateway','identity'],positions:['positions','executions'],orders:['orders','inflight','unknown'],engine:['engine','lease']};
+const technical=new Set(Object.values(groups).flat());
+let result=primary.filter(row=>!technical.has(row.id));
+for(const [id,ids] of Object.entries(groups)){
+ const members=ids.map(key=>index.get(key)).filter(Boolean);
+ if(!members.length)continue;
+ const issues=members.filter(row=>row.status==='failed'||row.missing);
+ if(id==='engine'&&!issues.length)continue;
+ const pending=members.some(row=>row.status==='pending'||row.missing);
+ const base=index.get(id)||members[0];
+ result.push({...base,id,label:{gateway:'券商连接与账户',positions:'持仓与成交核对',orders:'挂单与在途订单',engine:'运行状态'}[id],
+  status:issues.some(row=>row.status==='failed')?'failed':pending?'pending':'passed',
+  missing:issues.some(row=>row.missing),issue_ids:issues.map(row=>row.id),
+  detail:issues.map(row=>row.detail).join('；')||base.detail});
+}
+for(const id of ['authorization','old_pool','batch_interval']){
+ const row=index.get(id);
+ if(row&&!result.some(item=>item.id===id))result.push({...row});
+}
+// 批次间隔独立展示，资金汇总只反映其余资金条件，避免重复阻塞。
+const funding=result.find(row=>row.id==='summary_funding');
+const fundingMembers=checks.filter(row=>row.id!=='batch_interval'&&(row.group==='资金与额度'||(row.group==='WhatIf与发送前'&&row.id!=='final')));
+if(funding&&fundingMembers.length){
+ const issues=fundingMembers.filter(row=>row.status==='failed'||row.missing);
+ funding.issue_ids=issues.map(row=>row.id);
+ funding.status=issues.some(row=>row.status==='failed')?'failed':fundingMembers.some(row=>row.status==='pending'||row.missing)?'pending':'passed';
+ funding.missing=issues.some(row=>row.missing);
+}
+if(funding?.issue_ids?.includes('quota_day'))result=result.filter(row=>!(row.id.startsWith('runtime_')&&String(row.detail||'').includes('当前IVP对应的当日开仓额度')));
+// 固定行与顺序；首次连接和异常恢复期间也只更新状态，不增删行。
+const layout=[['gateway','券商连接与账户'],['positions','持仓与成交核对'],['orders','挂单与在途订单'],['old_pool','已有仓位退出检查'],['engine','运行状态'],['authorization','新增开仓授权'],['summary_hours','交易时段与市场压力'],['summary_volatility','IVP'],['summary_quotes','行情与盘口'],['summary_candidate','候选与费用'],['summary_funding','资金与风险'],['batch_interval','两批开仓最小间隔']];
+const known=new Set(layout.map(([id])=>id));
+const extras=result.filter(row=>!known.has(row.id)&&(row.status==='failed'||row.status==='pending'||row.missing));
+const extraIds=new Set(extras.map(row=>row.id));
+for(const row of otherCheckRows(checks,result))if(!extraIds.has(row.id)){extras.push(row);extraIds.add(row.id);}
+const ordered=layout.map(([id,label])=>{
+ const row=result.find(item=>item.id===id)||index.get(id);
+ return row?{...row,label}:{id,label,group:id==='engine'?'连接与授权':'关键门槛',status:'pending',detail:'等待检查结果。',at:null};
+});
+ordered.push({id:'other_conditions',label:'其他运行条件',group:'关键门槛',status:extras.some(row=>row.status==='failed')?'failed':extras.length?'pending':checks.length?'passed':'pending',detail:extras.length?extras.map(row=>row.detail||row.label).join('；'):'暂无其他异常。',extra_rows:extras,at:Math.max(0,...extras.map(row=>row.at||0))||null});
+return ordered;
+}
+function otherCheckRows(checks,primary){
+// 主表汇总已包含的子项同样去重，仅保留真正未显示的检查。
+const shown=new Set(primary.flatMap(row=>[row.id,...(row.issue_ids||[])]));
+const normalHidden=new Set(['gateway','identity','positions','executions','orders','inflight','unknown','engine','lease','authorization','old_pool','batch_interval']);
+const summaryIds=new Set(primary.map(row=>row.id));
+return checks.filter(row=>{
+ if(shown.has(row.id)||normalHidden.has(row.id))return false;
+ if(primary.some(item=>item.id==='summary_funding'&&item.issue_ids?.includes('quota_day'))&&row.id.startsWith('runtime_')&&String(row.detail||'').includes('当前IVP对应的当日开仓额度'))return false;
+ if(row.status!=='failed'&&!row.missing)return false;
+ if(summaryIds.has('summary_hours')&&['market_hours','opening_hours','pressure'].includes(row.id))return false;
+ if(summaryIds.has('summary_volatility')&&['iv_history','iv_current','ivp'].includes(row.id))return false;
+ if(summaryIds.has('summary_quotes')&&['QQQ标的行情','短腿盘口','保护腿盘口'].includes(row.group))return false;
+ if(summaryIds.has('summary_candidate')&&row.group==='候选合约'&&row.id!=='delta')return false;
+ if(summaryIds.has('summary_funding')&&(row.group==='资金与额度'||(row.group==='WhatIf与发送前'&&row.id!=='final')))return false;
+ return true;
+});
+}
+function briefCheckDetail(s,row){
+const id=row.id||'',status=row.status,passed=status==='passed',pending=status==='pending',issues=row.issue_ids||[];
+const states=issues.length?issues:[id],has=key=>states.some(value=>value===key||value.endsWith(key));
+const rules=s.rules||{},scan=s.scan||{};
+const recheckedTimeout=s.mode==='HALTED'&&(s.reasons||[]).some(reason=>String(reason).includes('IBKR请求超时'))&&!s.connection?.last_error&&['identity','executions','positions','orders'].every(key=>s.verification?.[key]?.passed===true);
+const autoRecovering=s.mode==='HALTED'&&rules.auto_recover_data_timeout&&s.recovery_available;
+const shortTime=value=>new Date(value*1000).toLocaleString('zh-CN',{timeZone:'Asia/Hong_Kong',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+if(id==='old_pool'&&s.pools?.length){
+ if(s.mode==='HALTED'||s.management?.status==='STOPPED')return autoRecovering?'数据超时暂停，核对通过后自动恢复持仓管理。':recheckedTimeout?'本轮核对已通过，历史异常暂停尚未解除。':'自动管理已暂停，需先完成券商与持仓核对。';
+ if(s.connection?.status&&s.connection.status!=='CONNECTED')return '券商连接与核对未完成，暂不能自动退出。';
+ if(['STALE','WAITING'].includes(s.management?.status))return '尚无近期有效退出检查，不能确认自动退出。';
+ if(s.management?.status==='OUTSIDE_HOURS')return '当前不在自动退出时段，等待下次检查。';
+ const views=s.pools.map(pool=>pool.view||{}),waiting=views.filter(v=>['WAIT_QUOTES','WAIT_PNL'].includes(v.signal)).length;
+ if(waiting)return '账本'+waiting+'种组合等待有效数据，暂不能自动退出。';
+ const exits=views.filter(v=>['TAKE_PROFIT','STOP_LOSS','TIME_EXIT'].includes(v.signal)).length;
+ return exits?exits+'种组合出现退出信号，等待确认执行。':views.every(v=>v.signal==='HOLD')?views.length+'种组合继续持有，盘口有效。':'持仓检查尚未全部完成。';
+}
+if(id==='other_conditions'){
+ const rows=row.extra_rows||[];
+ if(!rows.length)return passed?'暂无其他异常。':'等待检查结果。';
+ const first=briefCheckDetail(s,rows[0]);
+ return rows.length===1?first:'有'+rows.length+'项其他异常，请先核对运行状态。';
+}
+if(id.startsWith('runtime_')){
+ const reason=String(row.detail||'');
+ if(reason.includes('当前IV缺失'))return '波动率数据尚未就绪，等待更新。';
+ if(reason.includes('标的实时成交价缺失'))return '标的最新价格缺失，等待更新。';
+ if(reason.includes('当前IVP对应'))return s.opening_quota?.ivp==null?'当日额度等待有效数据后确认。':'当日可用额度不足。';
+}
+if(id==='summary_funding'&&status==='failed'&&issues.length===1&&has('quota_day'))return '当日可用开仓额度不足。';
+if(id==='summary_funding'&&status==='failed'&&issues.length>1)return issues.length+'项资金条件未满足，暂不可开仓。';
+if(has('batch_interval')){
+ const batch=s.opening_batch||{};
+ return batch.next_opening_at?'下批最早 '+shortTime(batch.next_opening_at)+'（香港/北京）。':'最早开仓时间待券商交易时段核验。';
+}
+if(id==='summary_quotes')return passed?'标的和两腿行情、盘口均符合要求。':pending?'等待标的和期权的有效报价。':has('_depth')?'盘口数量不足，等待恢复。':has('_age')?'报价已过期，等待更新。':'行情或盘口尚未满足开仓要求。';
+if(id==='summary_volatility'||id==='ivp'){
+ if(id==='summary_volatility'&&(has('iv_current')||has('iv_history')))return '波动率数据尚未就绪，等待更新。';
+ const observation=s.iv_observation;
+ const ivp=observation&&Object.prototype.hasOwnProperty.call(observation,'ivp')?observation.ivp:s.opening_quota?.ivp??scan.ivp;
+ return Number.isFinite(ivp)&&Number.isFinite(rules.ivp_min)?'当前IVP '+ivp.toFixed(2)+'%，要求至少'+rules.ivp_min+'%。':'等待有效的IVP数据。';
+}
+if(id==='summary_hours'){
+ const hours=rules.open_start&&rules.open_end?'（美东 '+rules.open_start+'–'+rules.open_end+'）':'';
+ return passed?'当前处于允许开仓时段'+hours+'，市场压力正常。':pending?'允许开仓时段'+hours+'，等待状态核对。':has('pressure')?'市场波动触发保护，暂停新增。':'当前不在允许开仓时段'+hours+'。';
+}
+if(id==='summary_candidate')return passed?'组合、虚值率和费用均符合要求。':pending?'等待符合要求的期权组合。':has('fees')?'预估费用超过已确认的比例上限。':has('otm')?'候选虚值率超出允许范围。':has('credit')?'候选权利金不足，等待合适报价。':'候选组合尚未满足开仓要求。';
+if(id==='summary_funding')return passed?'资金、额度和保证金检查通过。':pending?'等待券商费用和保证金试算。':issues.length>1?issues.length+'项资金条件未满足，暂不可开仓。':'资金或保证金条件未满足，暂不可开仓。';
+if(id==='gateway'&&has('identity'))return '账户核对未通过，请核对Gateway登录账户。';
+if(id==='positions'&&(s.verification?.positions?.passed===false||(status==='failed'&&issues.includes('positions'))))return '已确认实际持仓与账本有差异，需要核对。';
+if(id==='positions'&&pending){
+ const error=String(s.connection?.last_error||'');
+ return error.includes('超时')&&error.includes('成交回报')?'成交回报读取超时，持仓尚未完成核对。':error.includes('持仓')?'持仓数据未完整返回，尚未完成核对。':'持仓与成交尚未完成核对，不能判断是否一致。';
+}
+if(id==='positions'&&has('executions'))return '成交同步未完成，等待核对后恢复。';
+if(id==='orders'&&has('unknown'))return '订单结果未确认，需要核对。';
+if(id==='orders'&&has('inflight'))return '订单处理中，等待成交或撤单确认。';
+if(id==='engine'&&has('lease'))return '运行权未确认，请检查是否重复启动。';
+if(id==='engine'&&autoRecovering)return '数据超时暂停，核对通过后自动恢复持仓管理。';
+if(id==='engine'&&recheckedTimeout)return '本轮核对已通过，历史异常暂停尚未解除。';
+if(pending)return '本项尚未完成核对，等待完整数据。';
+const messages={gateway:['已连接IBKR。','券商连接未就绪，等待恢复。'],identity:['模拟账户身份已核对。','账户身份尚未核对通过。'],positions:['实际持仓与系统账本一致。','持仓与账本不一致，需要核对。'],executions:['成交回报已同步。','成交回报尚未完成核对。'],orders:['账户无待处理挂单。','账户有挂单，等待订单核对。'],lease:['当前工作台为唯一运行实例。','运行权未确认，请检查重复启动。'],inflight:['当前无在途订单。','订单处理中，等待结果确认。'],unknown:['没有待核对的未知订单。','存在未知订单，需要核对。'],authorization:['当前开仓授权有效。','当前未授权新增开仓。'],whatif:['券商费用和保证金试算已完成。','等待券商费用和保证金试算。'],fee_actual:['已按券商预估费用重新核验。','券商费用核验尚未通过。'],final:['发送前检查已通过。','实际下单前将再次核验全部条件。']};
+if(messages[id])return messages[id][passed?0:1];
+if(id==='engine'&&passed)return '系统运行正常。';
+if(status==='observe')return '仅作参考，不影响开仓。';
+if(pending)return '等待前置检查完成。';
+const quoteMessages={_live:['实时行情已就绪。','实时行情尚未就绪。'],_fields:['已收到完整买卖报价。','买卖报价不完整，等待更新。'],_valid:['买卖报价有效。','买卖报价异常，暂不可用。'],_age:['报价在有效时间内。','报价已过期，等待更新。'],_skew:['买卖报价同步正常。','买卖报价不同步，等待更新。'],_depth:['盘口数量满足本次交易要求。','盘口数量不足，等待恢复。'],_spread:['买卖价差在允许范围内。','买卖价差过宽，等待收窄。'],_api:['行情连接正常。','行情请求异常，等待恢复。']};
+for(const [key,text] of Object.entries(quoteMessages))if(id.endsWith(key))return text[passed?0:1];
+let text=checkDetailText(id==='engine'&&s.management?.status==='STOPPED'&&s.management?.detail?'系统暂停：'+s.management.detail:row.detail).split(/[；\n]/)[0].replace(/WhatIf/g,'券商试算').replace(/HALTED/g,'已暂停').replace(/ USD/g,'美元');
+if(Array.from(text).length>38)return passed?'本项已符合要求。':'本项尚未满足，请核对后重试。';
+return text|| (passed?'本项已符合要求。':'本项尚未满足，请稍后重试。');
+}
+function renderQuota(q,batch){
+// 仅将后台提供的额度计数可视化，比例只决定进度条宽度，不用于交易判断。
+const heading='<div class="quota-top"><h3>开仓额度<small>美东时间</small></h3><span>'+esc(q?.periods?.day||'')+'</span></div>';
+if(!q?.ready)return heading+'<p class="quota-note">'+esc(q?.reason?'额度待核对：'+q.reason:'等待额度核对')+'</p>';
+const limit=q.limits?.day,used=q.used?.day,reserved=q.reserved;
+const known=q.ivp!=null&&Number.isFinite(limit)&&limit>0&&Number.isFinite(used)&&Number.isFinite(reserved)&&Number.isFinite(q.remaining);
+const usedWidth=known?Math.min(100,Math.max(0,used/limit*100)):0;
+const reservedWidth=known?Math.min(100-usedWidth,Math.max(0,reserved/limit*100)):0;
+const status=known?'已成交 '+used+' / 日额度 '+limit+' 组':'日上限待有效IVP核验';
+const bar='<div class="quota-track'+(known?'':' quota-pending')+'"'+(known?' role="progressbar" aria-label="当日已成交及在途预占额度" aria-valuemin="0" aria-valuemax="'+limit+'" aria-valuenow="'+Math.min(limit,Math.max(0,used+reserved))+'" aria-valuetext="'+esc(status+'，在途预占 '+reserved+' 组，当前可用 '+q.remaining+' 组')+'"':' role="status" aria-label="日额度待核验"')+'><span class="quota-used" style="width:'+usedWidth+'%"></span><span class="quota-reserved" style="width:'+reservedWidth+'%"></span></div>';
+const totals=['week','month'].map((key,index)=>'<div class="quota-cell"><div class="quota-period"><small>'+['本周已成交','本月已成交'][index]+'</small><span class="quota-limit">'+esc(q.limits?.[key]==null?(key==='month'?'受流动性约束':'无固定组数上限'):'上限 '+q.limits[key]+'组')+'</span></div><strong class="quota-number">'+esc(q.used?.[key]??'—')+'<span>组</span></strong></div>').join('');
+const nextTime=batch?.next_opening_at?new Date(batch.next_opening_at*1000).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}):'';
+const notes=[known?'':'等待有效IVP确定日额度，不代表额度已用尽',batch&&!batch.ready&&nextTime?'下批最早 '+nextTime+'（香港/北京）':''].filter(Boolean).join(' · ');
+const daily='<div class="quota-cell"><div class="quota-period"><small>今日剩余额度</small><span class="quota-limit">'+esc(known?'':'日上限待有效IVP核验')+'</span></div><strong class="quota-number">'+(known?esc(q.remaining)+'<span>组</span>':'待核验')+'</strong>'+bar+'<div class="quota-legend"><span>'+esc(known?'已成交 '+used+' / 日额度 '+limit:'已成交 '+(used??'—'))+'</span><span>在途预占 '+esc(reserved??'—')+'</span></div></div>';
+return heading+'<div class="quota-body">'+daily+totals+'</div>'+(notes?'<div class="quota-note">'+esc(notes)+'</div>':'');
+}
+function renderStatus(s){
+if(latestStatus && s.at<latestStatus.at)return;
+if(pageFailed&&noticeSource==='fetch'){clearNotice();dismissedNotice='';}
+pageFailed=false;
+$('updated').textContent='合成快照 '+new Date(s.at*1000).toLocaleString();
+const a=s.snapshot||{}, m=s.allocation||{}; $('funds').innerHTML=[['券商实时模拟净资产',a.nav],['模拟现金',a.cash],['Paper当前SMA（非成交后预估）',a.sma],['策略初始本金',s.rules.initial_capital_usd],['策略当前净值',s.capital],['策略累计盈亏',s.capital_source?.cumulative_pnl,true],['独立期权账户保证金占用',m.used],['保证金上限（策略当前净值×'+(s.rules.margin_target_fraction*100).toFixed(2)+'%）',m.target],['距目标余量',m.remaining]].map(x=>'<div><small>'+esc(x[0])+'</small><div class="value '+(x[2]?signedClass(x[1]):'')+'">'+money(x[1])+'</div></div>').join('');
+$('quota').innerHTML=renderQuota(s.opening_quota,s.opening_batch);
+controls(s);
+renderHealth(s);renderOrders(s.order_progress);
+$('calendar-view').innerHTML=renderCalendar(s.scan?.calendar||{});
+const marginView=s.margin_admission;
+const marginLabels={account_nav_reference:'券商账户NAV参考值',buffer_required:'成交后三项缓冲下限',initial_after:'成交后初始保证金',maintenance_after:'成交后维持保证金',equity_after_conservative:'成交后权益保守估算',available_after_conservative:'成交后可用资金保守估算',excess_after_conservative:'成交后维持保证金余量',sma_current:'当前SMA',sma_after_lower_bound:'成交后SMA保守下界',target:'策略保证金金额上限'};
+$('margin-view').innerHTML=!marginView?'<p>等待合格候选与有效授权后自动检查券商保证金预览。</p>':Object.keys(marginLabels).some(k=>marginView[k]!=null)?'<p>'+esc(marginView.ready?'资金准入通过':'资金准入未通过，原因见下方门槛表')+'</p><table>'+Object.entries(marginLabels).filter(([k])=>marginView[k]!=null).map(([k,label])=>'<tr><td>'+esc(label)+'</td><td>'+esc(money(marginView[k]))+'</td></tr>').join('')+'</table><small>SMA为保守下界；成交后三项缓冲按本次最新券商NAV核验，非精确未来NAV。</small>':'<p>资金准入暂无法核验，具体原因见下方门槛表。</p>';
+const checkNames={passed:'✓ 通过',failed:'✗ 未通过',pending:'○ 待检查',observe:'— 仅观察'};
+const checkColors={passed:'#25613a',failed:'#a52626',pending:'#785000',observe:'#607089'};
+const {checks,primary:rawPrimary}=conditionTableRows(s);
+const primary=importantCheckRows(checks,rawPrimary);
+const managementIds=new Set(['gateway','identity','executions','positions','orders','lease','inflight','unknown','old_pool','display_error','engine']);
+const managementChecks=primary.filter(row=>managementIds.has(row.id)||(row.group==='连接与授权'&&row.id!=='authorization'));
+const openingChecks=primary.filter(row=>!managementChecks.includes(row));
+const otherChecks=[];
+const checkRows=(items,full,scope)=>items.map(original=>{
+const detail=briefCheckDetail(s,original);
+return '<tr>'+(full?'<td class="check-label">'+esc(original.group)+'</td>':'')+'<td class="check-label">'+esc(original.label)+'</td><td class="check-result" style="color:'+checkColors[original.status]+'">'+esc(checkNames[original.status])+'</td><td class="check-basis-cell"><div class="check-basis"><span class="check-preview">'+esc(detail)+'</span></div></td><td class="check-time">'+esc(original.at?new Date(original.at*1000).toLocaleTimeString():'尚未执行')+'</td></tr>';
+}).join('');
+const failedCount=primary.filter(row=>row.status==='failed'||row.missing).length;
+const pendingCount=primary.filter(row=>row.status==='pending').length;
+$('check-summary').textContent=!primary.length?'尚无检查结果':failedCount?failedCount+'项未通过'+(pendingCount?' · '+pendingCount+'项待检查':''):pendingCount?pendingCount+'项待检查':'检查全部通过';
+$('check-summary').className=failedCount?'check-issue':pendingCount?'check-wait':primary.length?'check-pass':'';
+$('checks').innerHTML=checkRows(openingChecks,false,'opening');
+$('management-checks').innerHTML=checkRows(managementChecks,false,'management');
+$('management-check-section').hidden=!managementChecks.length;
+$('checks-all').innerHTML=checkRows(otherChecks,true,'other')||'<tr><td colspan="5">没有其他检查项目。</td></tr>';
+$('checks-details-title').textContent='其他检查项目（'+otherChecks.length+'项）';
+$('other-check-section').hidden=!otherChecks.length;
+const scan=s.scan||{};
+const scanStamp=value=>value?new Date(value*1000).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}):'尚未完成';
+$('signals').innerHTML='<div class="scan-metadata-heading"><strong>扫描更新</strong><small>香港 / 北京</small></div>'+[['完整扫描',scan.at,s.rules.scan_seconds],['行情与候选复核',scan.checked_at,s.rules.candidate_review_seconds]].map(([label,at,seconds])=>'<div class="scan-metadata-row"><span>'+esc(label)+'</span><time>'+esc(scanStamp(at))+'</time><small>'+esc(seconds==null?'间隔待确认':'每 '+seconds+' 秒')+'</small></div>').join('')+'<div class="scan-metadata-note">前置检查或券商响应可能延后。</div>';
+
+const c=s.evaluated_candidate||scan.candidate;
+$('candidate').innerHTML=renderCandidate(c,scan);
+$('exit-summary').textContent='按到期日归并展示；金额单位为美元，退出仍按原策略池分别管理。';
+const netPositions=a.positions;
+if(!renderPositionGroups(s))$('positions').innerHTML=!Array.isArray(netPositions)?'<p>持仓数据尚未返回，不能确认空仓。</p>':netPositions.length?'<table><tr><th>合约</th><th>到期</th><th class="quantity-cell">数量</th></tr>'+netPositions.map(l=>'<tr><td>'+esc([l.symbol,l.right,price(l.strike)].filter(v=>v!=null).join(' '))+'</td><td>'+esc(l.expiry||'—')+'</td><td class="quantity-cell">'+esc(signedQty(l.quantity))+'</td></tr>').join('')+'</table>':s.verification?.positions?.passed?'<p>当前无持仓'+((s.pools||[]).length?'；仍有策略池记录，请结合上方退出状态核对。':'、无策略池。')+'</p>':'<p>最近返回的持仓列表为空；等待账户与策略账本核对。</p>';
+$('events').innerHTML=(s.events||[]).length?'<table><tr><th>时间</th><th>操作</th><th>说明</th></tr>'+s.events.map(e=>'<tr><td>'+esc(new Date(e.at*1000).toLocaleString())+'</td><td>'+esc(displayNames[e.kind]||'其他记录（'+e.kind+'）')+'</td><td>'+esc(readable(e.payload))+'</td></tr>').join('')+'</table>':'<p>暂无操作记录。</p>';
+
+}
+const BASE_SNAPSHOT={"at": 1782842400, "mode": "MANAGING", "authorization_until": null, "capital": 80080, "versions": {"service": "showcase-0.1.2", "rules": "DEMO", "finance_document": "示例参数", "started_at": 1782835200}, "rules": {"initial_capital_usd": 80000, "margin_target_fraction": 0.4, "scan_seconds": 60, "candidate_review_seconds": 15}, "capital_source": {"cumulative_pnl": 80}, "allocation": {"used": 1000, "target": 32032, "remaining": 31032}, "snapshot": {"nav": 80080, "cash": 20000, "sma": 25000, "positions": [{"symbol": "DEMO", "conid": "DEMO-90", "right": "P", "strike": 90, "expiry": "20260717", "quantity": 2, "average_price": 0.6, "mark_price": 0.4, "cost_basis": 120, "market_value": 80, "unrealized_pnl": -40, "daily_pnl": -10, "quote": {"bid": 0.35000000000000003, "ask": 0.45, "delta": -0.12}}, {"symbol": "DEMO", "conid": "DEMO-95", "right": "P", "strike": 95, "expiry": "20260717", "quantity": -2, "average_price": 1.5, "mark_price": 0.9, "cost_basis": -300, "market_value": -180, "unrealized_pnl": 120, "daily_pnl": 30, "quote": {"bid": 0.85, "ask": 0.9500000000000001, "delta": -0.21}}]}, "connection": {"status": "CONNECTED", "attempts": 1}, "management": {"status": "MONITORING", "label": "合成持仓快照", "detail": "示例快照：行情与持仓已核对；页面不运行后台管理。", "last_check_at": 1782842400, "last_attempt_at": 1782842400, "snapshot_at": 1782842400, "pool_count": 1}, "verification": {"identity": {"passed": true}, "positions": {"passed": true}, "orders": {"passed": true}, "executions": {"passed": true}}, "pools": [{"id": "demo-pool", "view": {"signal": "HOLD"}}], "position_groups": [{"id": "demo-expiry", "symbol": "DEMO", "expiry": "2026-07-17", "combinations": [{"id": "demo-combo", "name": "Bull Put Spread", "groups": 2, "legs": [{"symbol": "DEMO", "conid": "DEMO-90", "right": "P", "strike": 90, "expiry": "20260717", "quantity": 2, "average_price": 0.6, "mark_price": 0.4, "cost_basis": 120, "market_value": 80, "unrealized_pnl": -40, "daily_pnl": -10, "quote": {"bid": 0.35000000000000003, "ask": 0.45, "delta": -0.12}}, {"symbol": "DEMO", "conid": "DEMO-95", "right": "P", "strike": 95, "expiry": "20260717", "quantity": -2, "average_price": 1.5, "mark_price": 0.9, "cost_basis": -300, "market_value": -180, "unrealized_pnl": 120, "daily_pnl": 30, "quote": {"bid": 0.85, "ask": 0.9500000000000001, "delta": -0.21}}], "unrealized_pnl": 80, "unrealized_pct": 44.44444444444444, "market_value": -100, "daily_pnl": 20}], "legs": [{"symbol": "DEMO", "conid": "DEMO-90", "right": "P", "strike": 90, "expiry": "20260717", "quantity": 2, "average_price": 0.6, "mark_price": 0.4, "cost_basis": 120, "market_value": 80, "unrealized_pnl": -40, "daily_pnl": -10, "quote": {"bid": 0.35000000000000003, "ask": 0.45, "delta": -0.12}}, {"symbol": "DEMO", "conid": "DEMO-95", "right": "P", "strike": 95, "expiry": "20260717", "quantity": -2, "average_price": 1.5, "mark_price": 0.9, "cost_basis": -300, "market_value": -180, "unrealized_pnl": 120, "daily_pnl": 30, "quote": {"bid": 0.85, "ask": 0.9500000000000001, "delta": -0.21}}], "unrealized_pnl": 80, "unrealized_pct": 44.44444444444444, "market_value": -100, "daily_pnl": 20}], "opening_quota": {"ready": true, "ivp": 42, "periods": {"day": "2026-06-30"}, "limits": {"day": 8, "week": null, "month": null}, "used": {"day": 2, "week": 4, "month": 6}, "reserved": 0, "remaining": 6}, "opening_batch": {"ready": true}, "margin_admission": {"ready": true, "account_nav_reference": 80080, "buffer_required": 8008, "initial_after": 1200, "maintenance_after": 1000, "equity_after_conservative": 80077.6, "available_after_conservative": 78877.6, "excess_after_conservative": 79077.6, "sma_current": 25000, "sma_after_lower_bound": 24800, "target": 32032}, "checklist": [{"id": "gateway", "label": "券商连接与账户", "group": "连接与授权", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "identity", "label": "账户身份", "group": "连接与授权", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "positions", "label": "持仓核对", "group": "连接与授权", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "executions", "label": "成交回报", "group": "连接与授权", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "orders", "label": "挂单核对", "group": "连接与授权", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "lease", "label": "运行权", "group": "连接与授权", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "engine", "label": "运行状态", "group": "连接与授权", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "inflight", "label": "在途订单", "group": "连接与授权", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "unknown", "label": "未知订单", "group": "连接与授权", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "old_pool", "label": "已有仓位退出检查", "group": "连接与授权", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "authorization", "label": "新增授权", "group": "连接与授权", "status": "pending", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "summary_hours", "label": "交易时段与市场压力", "group": "关键门槛", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "summary_volatility", "label": "IVP", "group": "关键门槛", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "summary_quotes", "label": "行情与盘口", "group": "关键门槛", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "summary_candidate", "label": "候选与费用", "group": "关键门槛", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "summary_funding", "label": "资金与风险", "group": "资金与额度", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "batch_interval", "label": "批次间隔", "group": "关键门槛", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}], "check_summary": [{"id": "gateway", "label": "券商连接与账户", "group": "连接与授权", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "identity", "label": "账户身份", "group": "连接与授权", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "positions", "label": "持仓核对", "group": "连接与授权", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "executions", "label": "成交回报", "group": "连接与授权", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "orders", "label": "挂单核对", "group": "连接与授权", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "lease", "label": "运行权", "group": "连接与授权", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "engine", "label": "运行状态", "group": "连接与授权", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "inflight", "label": "在途订单", "group": "连接与授权", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "unknown", "label": "未知订单", "group": "连接与授权", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "old_pool", "label": "已有仓位退出检查", "group": "连接与授权", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "authorization", "label": "新增授权", "group": "连接与授权", "status": "pending", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "summary_hours", "label": "交易时段与市场压力", "group": "关键门槛", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "summary_volatility", "label": "IVP", "group": "关键门槛", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "summary_quotes", "label": "行情与盘口", "group": "关键门槛", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "summary_candidate", "label": "候选与费用", "group": "关键门槛", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "summary_funding", "label": "资金与风险", "group": "资金与额度", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}, {"id": "batch_interval", "label": "批次间隔", "group": "关键门槛", "status": "passed", "detail": "固定合成检查结果，仅用于界面展示。", "at": 1782842400}], "reasons": [], "scan": {"at": 1782842400, "checked_at": 1782842400, "ivp": 42, "calendar": {"ready": true, "verified_date": "2026-06-30", "sources": [], "sync": {"status": "SUCCEEDED"}, "observation": {"today": "2026-06-30", "today_events": [], "upcoming": [], "preview_sync": {"status": "SUCCEEDED"}, "calendar_events": [{"date": "2026-06-10", "kind": "CPI"}, {"date": "2026-06-17", "kind": "FOMC"}]}}}, "evaluated_candidate": {"at": 1782842400, "legs": [{"symbol": "DEMO", "conid": "DEMO-90", "right": "P", "strike": 90, "expiry": "20260717", "quantity": 2, "average_price": 0.6, "mark_price": 0.4, "cost_basis": 120, "market_value": 80, "unrealized_pnl": -40, "daily_pnl": -10, "quote": {"bid": 0.55, "ask": 0.65, "delta": -0.12}}, {"symbol": "DEMO", "conid": "DEMO-95", "right": "P", "strike": 95, "expiry": "20260717", "quantity": -2, "average_price": 1.5, "mark_price": 0.9, "cost_basis": -300, "market_value": -180, "unrealized_pnl": 120, "daily_pnl": 30, "quote": {"bid": 1.55, "ask": 1.65, "delta": -0.21}}], "assessment": {"metrics": {"credit": 180, "stop_basis_estimate": 177.6, "roundtrip_fee_estimate": 4.8, "projected_pool_risk": 820, "groups": 2, "dte": 17, "otm": 0.05}}}, "order_progress": [{"intent": "demo-order-01", "kind": "OPEN", "order_id": "DEMO-001", "created": 1782838800, "planned": 2, "filled": 2, "label": "全部成交", "fees_ready": true, "legs": [{"symbol": "DEMO", "conid": "DEMO-90", "right": "P", "strike": 90, "expiry": "20260717", "quantity": 2, "average_price": 0.6, "mark_price": 0.4, "cost_basis": 120, "market_value": 80, "unrealized_pnl": -40, "daily_pnl": -10, "quote": {"bid": 0.35000000000000003, "ask": 0.45, "delta": -0.12}, "filled": 2, "average_fill_price": 0.6}, {"symbol": "DEMO", "conid": "DEMO-95", "right": "P", "strike": 95, "expiry": "20260717", "quantity": -2, "average_price": 1.5, "mark_price": 0.9, "cost_basis": -300, "market_value": -180, "unrealized_pnl": 120, "daily_pnl": 30, "quote": {"bid": 0.85, "ask": 0.9500000000000001, "delta": -0.21}, "filled": -2, "average_fill_price": 1.5}], "combination": {"name": "Bull Put Spread", "symbols": ["DEMO"]}, "decision": {"assessment": {"eligible": true}, "margin_admission": {"ready": true}}, "trade_details": {"final": true, "last_fill_at": 1782840600, "combination_price": 0.9, "gross_cash": 180, "total_fees": 2.4, "net_cash": 177.6}}, {"intent": "demo-order-02", "kind": "CLOSE", "order_id": "DEMO-002", "created": 1782756000, "planned": 2, "filled": 2, "label": "全部成交", "fees_ready": true, "legs": [{"symbol": "DEMO", "conid": "DEMO-90", "right": "P", "strike": 90, "expiry": "20260619", "quantity": 2, "average_price": 0.4, "mark_price": 0.4, "cost_basis": 120, "market_value": 80, "unrealized_pnl": -40, "daily_pnl": -10, "quote": {"bid": 0.35000000000000003, "ask": 0.45, "delta": -0.12}, "filled": -2, "average_fill_price": 0.6}, {"symbol": "DEMO", "conid": "DEMO-95", "right": "P", "strike": 95, "expiry": "20260619", "quantity": -2, "average_price": 0.9, "mark_price": 0.9, "cost_basis": -300, "market_value": -180, "unrealized_pnl": 120, "daily_pnl": 30, "quote": {"bid": 0.85, "ask": 0.9500000000000001, "delta": -0.21}, "filled": 2, "average_fill_price": 1.5}], "combination": {"name": "Bull Put Spread", "symbols": ["DEMO"]}, "decision": {"exit": {"signal": "TAKE_PROFIT"}}, "trade_details": {"final": true, "last_fill_at": 1782756000, "combination_price": -0.5, "gross_cash": -100, "total_fees": 2.4, "net_cash": -102.4}, "settlement": {"opening_gross_cash": 180, "total_roundtrip_fees": 4.8, "realized_pnl": 75.2, "realized_pct": 42.34234234234234, "basis": 177.6, "opening_average_prices": {"DEMO-90": 0.6, "DEMO-95": 1.5}}}], "events": [{"at": 1782842400, "kind": "DEMO_SNAPSHOT", "payload": "合成快照已载入，所有操作与记录均为示例。"}], "alerts": {"active": [], "history": []}};
+// 用本地合成场景替代实时状态接口；所有原显示函数接收相同的数据结构。
+function applyScenario(){
+ const scenario=$('scenario').value,s=structuredClone(BASE_SNAPSHOT);
+ const row=id=>s.checklist.find(item=>item.id===id);
+ if(scenario==='stale'){
+  s.management.status='WAIT_DATA';s.management.detail='示例异常：两腿行情已过期，等待完整数据。';
+  row('summary_quotes').status='failed';row('summary_quotes').issue_ids=['quote_age'];
+ }
+ if(scenario==='mismatch'){
+  s.mode='HALTED';s.management.status='STOPPED';s.management.label='持仓待核对';
+  s.management.detail='示例异常：实际净腿与账本不一致，管理暂停。';
+  s.verification.positions.passed=false;row('positions').status='failed';
+ }
+ if(scenario==='pending'){
+  s.mode='OPEN_PENDING';s.management.status='ORDER_PENDING';
+  s.management.detail='示例状态：已有部分成交，尚未完成订单及费用核对。';
+  s.order_progress[0].trade_details.final=false;s.order_progress[0].filled=1;
+  s.order_progress[0].label='部分成交，等待核对';s.order_progress[0].fees_ready=false;
+  s.order_progress[0].trade_details.working_remaining=1;
+  s.order_progress[0].trade_details.gross_cash=90;
+  s.order_progress[0].trade_details.total_fees=null;
+  s.order_progress[0].trade_details.net_cash=null;
+  s.order_progress[0].legs.forEach(leg=>{leg.filled=leg.quantity/2;});
+  row('inflight').status='pending';
+ }
+ s.check_summary=s.checklist;
+ renderStatus(s);
+ $('management-label').textContent='演示 · '+$('management-label').textContent;
+ $('updated').textContent+='（固定示例，非实时）';
+}
+for(const name of ['history']){$(name+'-toggle').ontoggle=()=>{$(name+'-panel').hidden=!$(name+'-toggle').open;};}
+$('calendar-view').onclick=event=>{const button=event.target.closest('[data-calendar-step]');if(button)moveCalendarMonth(Number(button.dataset.calendarStep));};
+$('notice-dismiss').onclick=clearNotice;
+$('scenario').onchange=applyScenario;
+$('refresh').onclick=applyScenario;
+applyScenario();
+
+</script></html>
